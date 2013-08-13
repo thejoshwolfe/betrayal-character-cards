@@ -1,0 +1,24 @@
+<!doctype html>
+<html ng-app="main">
+  <head>
+    <title>Betrayal Character Card</title>
+    <link rel="stylesheet" type="text/css" href="index.css"/>
+    <script src="angular.js"></script>
+    <script src="index.js"></script>
+  </head>
+  <body ng-controller="MainCtrl">
+    <span ng-class="character().colorClass">{{state.current.character}}</span>
+    <table>
+      <tr><th ng-repeat="trait in traitTable()">{{trait.name}}</th></tr>
+      <tr><td ng-repeat="t in traitIndexes"><input type="button" value="^" ng-click="modifyHealth(t, 1)"></td></tr>
+      <tr ng-repeat="h in healthValues">
+        <td ng-repeat="t in traitIndexes">
+          <span ng-show="state.current.health[t] == h">[</span>
+          {{traitTable()[t].values[h]}}
+          <span ng-show="state.current.health[t] == h">]</span>
+        </td>
+      </tr>
+      <tr><td ng-repeat="t in traitIndexes"><input type="button" value="v" ng-click="modifyHealth(t, -1)"></td></tr>
+    </table>
+  </body>
+</html>
