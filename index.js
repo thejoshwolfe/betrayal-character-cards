@@ -31,6 +31,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     var healths = $scope.state.current.health;
     healths[t] = clamp(healths[t] + delta, 0, $scope.healthValues.length - 1);
   };
+  $scope.cellClass = function(t, h) {
+    var styles = [];
+    if ($scope.traitTable()[t].start === h) styles.push("starting");
+    if ($scope.state.current.health[t] === h) styles.push("current");
+    return styles.join(" ");
+  }
 
   function clamp(v, min, max) {
     return v < min ? min : v > max ? max : v;
