@@ -11,7 +11,7 @@
     <select ng-model="state.current.character" ng-options="x for x in characterOptions()"></select>
     <table>
       <tr><th ng-repeat="trait in traitTable()" ng-class="character().colorClass">{{trait.name}}</th></tr>
-      <tr><td ng-repeat="t in traitIndexes"><input type="button" value="^" ng-click="modifyHealth(t, 1)"></td></tr>
+      <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" ^ " ng-click="modifyHealth(t, 1)"></td></tr>
       <tr ng-repeat="h in healthValues">
         <td ng-class="cellClass(t, h)" ng-repeat="t in traitIndexes">
           <span ng-show="state.current.health[t] == h">[</span>
@@ -19,7 +19,7 @@
           <span ng-show="state.current.health[t] == h">]</span>
         </td>
       </tr>
-      <tr><td ng-repeat="t in traitIndexes"><input type="button" value="v" ng-click="modifyHealth(t, -1)"></td></tr>
+      <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" v " ng-click="modifyHealth(t, -1)"></td></tr>
     </table>
   </body>
 </html>
