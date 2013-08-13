@@ -1,3 +1,7 @@
+body, select, input {
+    font-size: 150%;
+}
+
 td {
     text-align: center;
 }
