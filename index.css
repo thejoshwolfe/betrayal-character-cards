@@ -12,7 +12,5 @@ td {
     background: #bbb;
 }
 
-.red {
-    background: red;
-    font-size: 26pt;
-}
+.red  { background: #f44;  }
+.blue { background: #44f; }

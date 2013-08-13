@@ -7,9 +7,9 @@
     <script src="index.js"></script>
   </head>
   <body ng-controller="MainCtrl">
-    <span ng-class="character().colorClass">{{state.current.character}}</span>
+    <select ng-model="state.current.character" ng-options="x for x in characterOptions()"></select>
     <table>
-      <tr><td ng-repeat="trait in traitTable()">{{trait.name}}</td></tr>
+      <tr><th ng-repeat="trait in traitTable()" ng-class="character().colorClass">{{trait.name}}</th></tr>
       <tr><td ng-repeat="t in traitIndexes"><input type="button" value="^" ng-click="modifyHealth(t, 1)"></td></tr>
       <tr ng-repeat="h in healthValues">
         <td ng-class="cellClass(t, h)" ng-repeat="t in traitIndexes">
