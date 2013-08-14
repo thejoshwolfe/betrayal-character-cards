@@ -73,6 +73,15 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           {name: "Knowl",  values: [0,2,2,3,3,5,5,6,6], start: 3},
         ],
       },
+      "Peter Akimoto": {
+        colorClass: "green",
+        traits: [
+          {name: "Speed",  values: [0,3,3,3,4,6,6,7,7], start: 4},
+          {name: "Might",  values: [0,2,3,3,4,5,5,6,8], start: 3},
+          {name: "Sanity", values: [0,3,4,4,4,5,6,6,7], start: 4},
+          {name: "Knowl",  values: [0,3,4,4,5,6,7,7,8], start: 3},
+        ],
+      },
       "Professor Longfellow": {
         colorClass: "white",
         traits: [
