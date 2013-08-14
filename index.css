@@ -16,5 +16,9 @@ td {
     background: #bbb;
 }
 
-.red  { background: #f44;  }
-.blue { background: #44f; }
+.red    { background: #f44;  }
+.blue   { background: #44f; }
+.green  { background: #4f4; }
+.yellow { background: #ff4; }
+.purple { background: #f4f; }
+.white  { background: #000; color: #fff }
