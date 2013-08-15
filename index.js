@@ -121,6 +121,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   // backwards so that they grow upward
   $scope.healthValues = [8,7,6,5,4,3,2,1,0];
 
+  $scope.$watch("state.current.character", initHealth);
+
   $scope.character = function() {
     return $scope.state.characters[$scope.state.current.character] || {};
   };
@@ -139,6 +141,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     if ($scope.traitTable()[t].start === h) styles.push("starting");
     if ($scope.state.current.health[t] === h) styles.push("current");
     return styles.join(" ");
+  };
+  function initHealth() {
+    if (!$scope.state.current.character) return;
+    for (var t = 0; t < $scope.traitIndexes.length; t++) {
+      $scope.state.current.health[t] = $scope.character().traits[t].start;
+    }
   }
 
   function clamp(v, min, max) {
