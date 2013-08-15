@@ -110,15 +110,32 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     },
   };
   $scope.current = {
-      character: "",
-      health: [],
-    };
+    character: "",
+    health: [],
+  };
+  loadState();
+
   // for iteration purposes
   $scope.traitIndexes = [0,1,2,3];
   // backwards so that they grow upward
   $scope.healthValues = [8,7,6,5,4,3,2,1,0];
 
-  $scope.$watch("current.character", initHealth);
+  $scope.$watch("current.character", function(newValue, oldValue) {
+    if (newValue === oldValue) return;
+    if ($scope.current.character) {
+      // a character is selected
+      if ($scope.current.health.length === 0 || oldValue) {
+        // either initializing from blank data, or we just switched away from a character
+        for (var t = 0; t < $scope.traitIndexes.length; t++) {
+          $scope.current.health[t] = $scope.character().traits[t].start;
+        }
+      }
+    } else {
+      // no character selected
+      $scope.current.health = [];
+    }
+    saveState();
+  });
 
   $scope.character = function() {
     return $scope.characters[$scope.current.character] || {};
@@ -131,6 +148,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     var value = healths[t];
     if (value == null) value = $scope.character().traits[t].start;
     healths[t] = clamp(value + delta, 0, $scope.healthValues.length - 1);
+    saveState();
   };
   $scope.cellClass = function(t, h) {
     if (!$scope.current.character) return "";
@@ -139,11 +157,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     if ($scope.current.health[t] === h) styles.push("current");
     return styles.join(" ");
   };
-  function initHealth() {
-    if (!$scope.current.character) return;
-    for (var t = 0; t < $scope.traitIndexes.length; t++) {
-      $scope.current.health[t] = $scope.character().traits[t].start;
-    }
+  function saveState() {
+    localStorage.betrayalState = window.angular.toJson($scope.current);
+  }
+  function loadState() {
+    var cachedState = localStorage.betrayalState;
+    if (cachedState) $scope.current = window.angular.fromJson(cachedState);
   }
 
   function clamp(v, min, max) {
