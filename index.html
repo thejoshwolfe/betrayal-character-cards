@@ -8,7 +8,7 @@
     <script src="index.js"></script>
   </head>
   <body ng-controller="MainCtrl">
-    <select ng-model="state.current.character" ng-options="x for x in characterOptions()">
+    <select ng-model="state.current.character" ng-options="name as name group by character.colorClass for (name, character) in state.characters">
       <option value="">-- select character --</option>
     </select>
     <table ng-show="state.current.character">

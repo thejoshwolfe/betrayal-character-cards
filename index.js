@@ -115,7 +115,6 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       health: [],
     },
   };
-  $scope.characterOptions = function() { return Object.keys($scope.state.characters); };
   // for iteration purposes
   $scope.traitIndexes = [0,1,2,3];
   // backwards so that they grow upward
