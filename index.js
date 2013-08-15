@@ -111,22 +111,21 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       },
     },
     current: {
-      character: null, // initialized in a moment...
+      character: "",
       health: [],
     },
   };
   $scope.characterOptions = function() { return Object.keys($scope.state.characters); };
-  $scope.state.current.character = $scope.characterOptions()[0];
   // for iteration purposes
   $scope.traitIndexes = [0,1,2,3];
   // backwards so that they grow upward
   $scope.healthValues = [8,7,6,5,4,3,2,1,0];
 
   $scope.character = function() {
-    return $scope.state.characters[$scope.state.current.character];
+    return $scope.state.characters[$scope.state.current.character] || {};
   };
   $scope.traitTable = function() {
-    return $scope.character().traits;
+    return $scope.character().traits || [];
   };
   $scope.modifyHealth = function(t, delta) {
     var healths = $scope.state.current.health;
@@ -135,6 +134,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     healths[t] = clamp(value + delta, 0, $scope.healthValues.length - 1);
   };
   $scope.cellClass = function(t, h) {
+    if (!$scope.state.current.character) return "";
     var styles = [];
     if ($scope.traitTable()[t].start === h) styles.push("starting");
     if ($scope.state.current.health[t] === h) styles.push("current");
