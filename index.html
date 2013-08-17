@@ -8,20 +8,24 @@
     <script src="index.js"></script>
   </head>
   <body ng-controller="MainCtrl">
-    <select ng-model="current.character" ng-options="name as name group by character.colorClass for (name, character) in characters">
-      <option value="">-- select character --</option>
-    </select>
-    <table ng-show="current.character">
-      <tr><th ng-repeat="trait in traitTable()" ng-class="character().colorClass">{{trait.name}}</th></tr>
-      <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" ^ " ng-click="modifyHealth(t, 1)"></td></tr>
-      <tr ng-repeat="h in healthValues">
-        <td ng-class="cellClass(t, h)" ng-repeat="t in traitIndexes">
-          <span ng-show="current.health[t] == h">[</span>
-          {{traitTable()[t].values[h]}}
-          <span ng-show="current.health[t] == h">]</span>
-        </td>
-      </tr>
-      <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" v " ng-click="modifyHealth(t, -1)"></td></tr>
-    </table>
+    <div style="float: left;" ng-repeat="explorer in explorers">
+      <select ng-model="explorer.character"
+          ng-options="name as name group by character.colorClass for (name, character) in characters"
+          ng-change="onCharacterSelect(explorer)">
+        <option value="">-- select character --</option>
+      </select>
+      <table ng-show="explorer.character">
+        <tr><th ng-repeat="trait in traitTable(explorer)" ng-class="character(explorer).colorClass">{{trait.name}}</th></tr>
+        <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" ^ " ng-click="modifyHealth(explorer, t, 1)"></td></tr>
+        <tr ng-repeat="h in healthValues">
+          <td ng-class="cellClass(explorer, t, h)" ng-repeat="t in traitIndexes">
+            <span ng-show="explorer.health[t] == h">[</span>
+            {{traitTable(explorer)[t].values[h]}}
+            <span ng-show="explorer.health[t] == h">]</span>
+          </td>
+        </tr>
+        <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" v " ng-click="modifyHealth(explorer, t, -1)"></td></tr>
+      </table>
+    </div>
   </body>
 </html>

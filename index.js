@@ -109,60 +109,71 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       ],
     },
   };
-  $scope.current = {
-    character: "",
-    health: [],
-  };
+  $scope.explorers = [
+    { character: null, health: [], },
+  ];
   loadState();
+  fixupExplorerList();
 
   // for iteration purposes
   $scope.traitIndexes = [0,1,2,3];
   // backwards so that they grow upward
   $scope.healthValues = [8,7,6,5,4,3,2,1,0];
 
-  $scope.$watch("current.character", function(newValue, oldValue) {
-    if (newValue === oldValue) return;
-    if ($scope.current.character) {
-      // a character is selected
-      if ($scope.current.health.length === 0 || oldValue) {
-        // either initializing from blank data, or we just switched away from a character
-        for (var t = 0; t < $scope.traitIndexes.length; t++) {
-          $scope.current.health[t] = $scope.character().traits[t].start;
-        }
+  $scope.onCharacterSelect = function(explorer) {
+    if (explorer.character) {
+      // a character is selected. initialize health to starting values.
+      for (var t = 0; t < $scope.traitIndexes.length; t++) {
+        explorer.health[t] = $scope.character(explorer).traits[t].start;
       }
     } else {
       // no character selected
-      $scope.current.health = [];
+      explorer.health = [];
     }
+    fixupExplorerList();
     saveState();
-  });
+  };
 
-  $scope.character = function() {
-    return $scope.characters[$scope.current.character] || {};
+  $scope.character = function(explorer) {
+    return $scope.characters[explorer.character] || {};
   };
-  $scope.traitTable = function() {
-    return $scope.character().traits || [];
+  $scope.traitTable = function(explorer) {
+    return $scope.character(explorer).traits || [];
   };
-  $scope.modifyHealth = function(t, delta) {
-    var healths = $scope.current.health;
+  $scope.modifyHealth = function(explorer, t, delta) {
+    var healths = explorer.health;
     var value = healths[t];
-    if (value == null) value = $scope.character().traits[t].start;
+    if (value == null) value = $scope.character(explorer).traits[t].start;
     healths[t] = clamp(value + delta, 0, $scope.healthValues.length - 1);
     saveState();
   };
-  $scope.cellClass = function(t, h) {
-    if (!$scope.current.character) return "";
+  $scope.cellClass = function(explorer, t, h) {
+    if (!explorer.character) return "";
     var styles = [];
-    if ($scope.traitTable()[t].start === h) styles.push("starting");
-    if ($scope.current.health[t] === h) styles.push("current");
+    if ($scope.traitTable(explorer)[t].start === h) styles.push("starting");
+    if (explorer.health[t] === h) styles.push("current");
     return styles.join(" ");
   };
   function saveState() {
-    localStorage.betrayalState = window.angular.toJson($scope.current);
+    localStorage.betrayalExplorers = window.angular.toJson($scope.explorers);
   }
   function loadState() {
-    var cachedState = localStorage.betrayalState;
-    if (cachedState) $scope.current = window.angular.fromJson(cachedState);
+    var cachedState = localStorage.betrayalExplorers;
+    if (cachedState) $scope.explorers = window.angular.fromJson(cachedState);
+  }
+  function fixupExplorerList() {
+    var explorers = $scope.explorers;
+    if (explorers[explorers.length - 1].character) {
+      // add a blank one to the end
+      explorers.push({ character: null, health: [] });
+    } else {
+      // reduce duplicate blanks from the end
+      for (var i = explorers.length - 2; i >= 0; i--) {
+        if (explorers[i].character) break;
+        // another blank. delete it.
+        explorers.splice(i, 1);
+      }
+    }
   }
 
   function clamp(v, min, max) {
