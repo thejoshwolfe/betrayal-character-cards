@@ -170,8 +170,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       // reduce duplicate blanks from the end
       for (var i = explorers.length - 2; i >= 0; i--) {
         if (explorers[i].character) break;
-        // another blank. delete it.
-        explorers.splice(i, 1);
+        // another blank. delete the last one.
+        // keep the earlier blank one in existence so that keboard focus doesn't disappear.
+        explorers.splice(i + 1, 1);
       }
     }
   }
