@@ -11,7 +11,8 @@
     <div style="float: left;" ng-repeat="explorer in explorers">
       <select ng-model="explorer.character"
           ng-options="name as name group by character.colorClass for (name, character) in characters"
-          ng-change="onCharacterSelect(explorer)">
+          ng-change="onCharacterSelect(explorer)"
+          tabindex="{{$index + 1}}">
         <option value="">-- select character --</option>
       </select>
       <table ng-show="explorer.character">
