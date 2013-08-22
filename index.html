@@ -26,7 +26,13 @@
         <option value="">-- select character --</option>
       </select>
       <table ng-show="explorer.character">
-        <tr><th ng-repeat="trait in traitTable(explorer)" ng-class="character(explorer).colorClass">{{trait.name}}</th></tr>
+        <tr><th ng-repeat="t in traitIndexes"
+            ng-class="character(explorer).colorClass"
+            style="cursor:pointer;"
+            title="{{traitColumnTitle(explorer, t)}}"
+            ng-click="onTraitColumnClick(explorer, t)">
+          {{traitColumnText(explorer, t)}}
+        </th></tr>
         <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" ^ " ng-click="modifyHealth(explorer, t, 1)"></td></tr>
         <tr ng-repeat="h in healthValues">
           <td ng-class="traitClass(explorer, t, h)" ng-repeat="t in traitIndexes">
