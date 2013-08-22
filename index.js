@@ -183,13 +183,6 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     }
   };
 
-  $scope.maybeClearState = function() {
-    if (!window.confirm("Reset to default state?")) return;
-    delete localStorage.betrayalState;
-    // refresh page
-    window.location.href = window.location.href;
-  };
-
   loadState();
   fixupExplorerList();
 
@@ -224,3 +217,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   }
 });
 
+function maybeClearState() {
+  if (!window.confirm("Reset to default state?")) return;
+  delete localStorage.betrayalState;
+  // refresh page
+  window.location.href = window.location.href;
+};

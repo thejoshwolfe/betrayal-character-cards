@@ -40,7 +40,8 @@
     <div style="clear:both;">
       <label><input id="showBigBar" type="checkbox" ng-checked="state.bigBarValue >= 0" ng-click="showHideBigBar()">Show Turn/Damage Tracker</label>
       <br>
-      <input type="button" value="Clear State" ng-click="maybeClearState()">
+      <!-- the clear state button can be our only way to recover from corrupt state. don't trust angular with it -->
+      <input type="button" value="Clear State" onclick="maybeClearState()">
     </div>
   </body>
 </html>
