@@ -27,7 +27,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       explorer.health = [];
       explorer.traitUpgraded = [];
       for (var t = 0; t < $scope.traitIndexes.length; t++) {
-        explorer.health[t] = $scope.character(explorer).traits[t].start;
+        explorer.health[t] = $scope.character(explorer).traits[t].start || 0;
         explorer.traitUpgraded[t] = false;
       }
     }

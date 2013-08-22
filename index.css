@@ -26,12 +26,13 @@ td {
     font-family: monospace;
 }
 
-.red    { background: #f44; }
-.blue   { background: #44f; }
-.green  { background: #4f4; }
-.yellow { background: #ff4; }
-.purple { background: #f4f; }
-.white  { background: #000; color: #fff }
+.red     { background: #f44; }
+.blue    { background: #44f; }
+.green   { background: #4f4; }
+.yellow  { background: #ff4; }
+.purple  { background: #f4f; }
+.white   { background: #000; color: #fff }
+.monster { background: #800; color: #fff }
 
 #modalMask {
     position: fixed;
