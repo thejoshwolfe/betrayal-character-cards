@@ -68,10 +68,10 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   };
   $scope.traitCellClass = function(explorer, t, h) {
     if (!explorer.character) return "";
-    var styles = [];
-    if ($scope.traitTable(explorer)[t].start === h) styles.push("starting");
-    if (clampHealth(explorer.health[t]) === h) styles.push("current");
-    return styles.join(" ");
+    var classes = [];
+    if ($scope.traitTable(explorer)[t].start === h) classes.push("starting");
+    if (clampHealth(explorer.health[t]) === h) classes.push("current");
+    return classes.join(" ");
   };
   $scope.traitCellTitle = function(explorer, t) {
     if (!explorer.character) return "";
@@ -83,6 +83,15 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   $scope.traitCell = function(explorer, t, h) {
     if (!explorer.character) return "";
     var value = "" + $scope.traitTable(explorer)[t].values[h];
+    if (value === "0") {
+      if ($scope.character(explorer).colorClass === "monster") {
+        // 0 means not applicable
+        value = "-";
+      } else {
+        // 0 means death. use a unicode skull.
+        value = String.fromCharCode(0x2620);
+      }
+    }
     var currentHealth = explorer.health[t];
     if (currentHealth === h) {
       value = "[ " + value + " ]";
@@ -106,9 +115,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   };
 
   $scope.bigBarClass = function(i) {
-    var styles = ["monospace"];
-    if (i === $scope.state.bigBarValue) styles.push("current");
-    return styles.join(" ");
+    var classes = ["monospace"];
+    if (i === $scope.state.bigBarValue) classes.push("current");
+    return classes.join(" ");
   };
   $scope.bigBarCell = function(i) {
     var nbsp = String.fromCharCode(0xa0);
