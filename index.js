@@ -109,9 +109,14 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       ],
     },
   };
-  $scope.explorers = [
-    { character: null, health: [], },
-  ];
+  // state is what's persisted in localStorage
+  $scope.state = {
+    explorers: [
+      { character: null, health: [], },
+    ],
+    bigBarValue: -1, // which means hidden
+  };
+
   loadState();
   fixupExplorerList();
 
@@ -154,15 +159,27 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     if (explorer.health[t] === h) styles.push("current");
     return styles.join(" ");
   };
+
+  $scope.modifyBigBar = function(delta) {
+    $scope.state.bigBarValue = clamp($scope.state.bigBarValue + delta, 0, 12);
+    saveState();
+  };
+
+  $scope.showHideBigBar = function() {
+    var newValue = getElementById("showBigBar").checked;
+    $scope.state.bigBarValue = newValue ? 0 : -1;
+    saveState();
+  };
+
   function saveState() {
-    localStorage.betrayalExplorers = window.angular.toJson($scope.explorers);
+    localStorage.betrayalState = window.angular.toJson($scope.state);
   }
   function loadState() {
-    var cachedState = localStorage.betrayalExplorers;
-    if (cachedState) $scope.explorers = window.angular.fromJson(cachedState);
+    var cachedState = localStorage.betrayalState;
+    if (cachedState) $scope.state = window.angular.fromJson(cachedState);
   }
   function fixupExplorerList() {
-    var explorers = $scope.explorers;
+    var explorers = $scope.state.explorers;
     if (explorers[explorers.length - 1].character) {
       // add a blank one to the end
       explorers.push({ character: null, health: [] });
@@ -179,6 +196,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
 
   function clamp(v, min, max) {
     return v < min ? min : v > max ? max : v;
+  }
+  function getElementById(id) {
+    return window.document.getElementById(id);
   }
 });
 

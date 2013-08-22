@@ -8,7 +8,16 @@
     <script src="index.js"></script>
   </head>
   <body ng-controller="MainCtrl">
-    <div style="float: left;" ng-repeat="explorer in explorers">
+    <div ng-show="state.bigBarValue >= 0">
+      <table>
+        <tr>
+          <td><input type="button" value=" &lt; " ng-click="modifyBigBar(-1)"></td>
+          <td>{{state.bigBarValue}}</td>
+          <td><input type="button" value=" &gt; " ng-click="modifyBigBar(1)"></td>
+        </tr>
+      </table>
+    </div>
+    <div style="float: left;" ng-repeat="explorer in state.explorers">
       <select ng-model="explorer.character"
           ng-options="name as name group by character.colorClass for (name, character) in characters"
           ng-change="onCharacterSelect(explorer)"
@@ -27,6 +36,9 @@
         </tr>
         <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" v " ng-click="modifyHealth(explorer, t, -1)"></td></tr>
       </table>
+    </div>
+    <div style="clear:both;">
+      <label><input id="showBigBar" type="checkbox" ng-checked="state.bigBarValue >= 0" ng-click="showHideBigBar()">Show Turn/Damage Tracker</label>
     </div>
   </body>
 </html>
