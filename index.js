@@ -1,10 +1,14 @@
 window.APP = window.angular.module('main', []).controller('MainCtrl', function($scope) {
+  // for debugging
+  window._scope = $scope;
+
   $scope.characters = window.Betrayal.characters;
 
   // state is what's persisted in localStorage
   $scope.state = {
     explorers: [],
     bigBarValue: -1, // which means hidden
+    itIsMeantToBe: null,
   };
 
   // for iteration purposes
@@ -108,9 +112,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     }
   };
 
-  loadState();
-  fixupExplorerList();
-
+  $scope.saveState = saveState;
   function saveState() {
     localStorage.betrayalState = window.angular.toJson($scope.state);
   }
@@ -144,6 +146,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   function getElementById(id) {
     return window.document.getElementById(id);
   }
+
+  loadState();
+  fixupExplorerList();
 });
 
 function maybeClearState() {
