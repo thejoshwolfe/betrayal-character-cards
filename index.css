@@ -16,6 +16,10 @@ td {
     background: #bbb;
 }
 
+.monospace {
+    font-family: monospace;
+}
+
 .red    { background: #f44; }
 .blue   { background: #44f; }
 .green  { background: #4f4; }

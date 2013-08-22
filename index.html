@@ -12,7 +12,7 @@
       <table>
         <tr>
           <td><input type="button" value=" &lt; " ng-click="modifyBigBar(-1)"></td>
-          <td>{{state.bigBarValue}}</td>
+          <td ng-repeat="i in bigBarValues" ng-class="bigBarClass(i)">{{bigBarCell(i)}}</td>
           <td><input type="button" value=" &gt; " ng-click="modifyBigBar(1)"></td>
         </tr>
       </table>

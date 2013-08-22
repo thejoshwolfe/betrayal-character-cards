@@ -117,13 +117,11 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     bigBarValue: -1, // which means hidden
   };
 
-  loadState();
-  fixupExplorerList();
-
   // for iteration purposes
   $scope.traitIndexes = [0,1,2,3];
   // backwards so that they grow upward
   $scope.healthValues = [8,7,6,5,4,3,2,1,0];
+  $scope.bigBarValues = [0,1,2,3,4,5,6,7,8,9,10,11,12];
 
   $scope.onCharacterSelect = function(explorer) {
     if (explorer.character) {
@@ -170,6 +168,23 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     $scope.state.bigBarValue = newValue ? 0 : -1;
     saveState();
   };
+
+  $scope.bigBarClass = function(i) {
+    var styles = ["monospace"];
+    if (i === $scope.state.bigBarValue) styles.push("current");
+    return styles.join(" ");
+  };
+  $scope.bigBarCell = function(i) {
+    var nbsp = String.fromCharCode(0xa0);
+    if (i === $scope.state.bigBarValue) {
+      return nbsp + "[" + i + "]" + nbsp;
+    } else {
+      return nbsp + " " + i + " " + nbsp;
+    }
+  };
+
+  loadState();
+  fixupExplorerList();
 
   function saveState() {
     localStorage.betrayalState = window.angular.toJson($scope.state);
