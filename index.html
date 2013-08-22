@@ -35,7 +35,11 @@
         </th></tr>
         <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" ^ " ng-click="modifyHealth(explorer, t, 1)"></td></tr>
         <tr ng-repeat="h in healthValues">
-          <td ng-class="traitClass(explorer, t, h)" ng-repeat="t in traitIndexes">
+          <td ng-repeat="t in traitIndexes"
+              ng-class="traitCellClass(explorer, t, h)"
+              style="cursor:pointer;"
+              title="{{traitCellTitle(explorer, t)}}"
+              ng-click="showDiceRoller(explorer, t)">
             {{traitCell(explorer, t, h)}}
           </td>
         </tr>
@@ -49,6 +53,21 @@
       <br>
       <!-- the clear state button can be our only way to recover from corrupt state. don't trust angular with it -->
       <input type="button" value="Clear State" onclick="maybeClearState()">
+    </div>
+    <div id="modalMask" ng-show="showDialog" ng-click="showDialog = false"></div>
+    <div id="modalDialog" ng-show="showDialog">
+      Dice Roller
+      <table><tr>
+        <td><input type="button" value=" &lt; " ng-click="modifyDice(-1)"></td>
+        <td ng-repeat="die in dice track by $index">
+          <span style="color: #888">[</span>
+          {{die}}
+          <span style="color: #888">]</span>
+        </td>
+        <td><input type="button" value=" &gt; " ng-click="modifyDice(1)"></td>
+      </tr></table>
+      <div class="large">{{dice.length}} Dice: <span class="extraLarge">[ {{diceTotal}} ]</span></div>
+      <input id="rollButton" type="button" value="Roll" style="width: 100%" ng-click="rollDice()">
     </div>
   </body>
 </html>

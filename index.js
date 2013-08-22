@@ -66,12 +66,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     healths[t] = clamp(value + delta, 0, window.Infinity);
     saveState();
   };
-  $scope.traitClass = function(explorer, t, h) {
+  $scope.traitCellClass = function(explorer, t, h) {
     if (!explorer.character) return "";
     var styles = [];
     if ($scope.traitTable(explorer)[t].start === h) styles.push("starting");
     if (clampHealth(explorer.health[t]) === h) styles.push("current");
     return styles.join(" ");
+  };
+  $scope.traitCellTitle = function(explorer, t) {
+    if (!explorer.character) return "";
+    var trait = $scope.traitTable(explorer)[t];
+    var traitName = $scope.traitTable(explorer)[t].name;
+    var traitValue = trait.values[clampHealth(explorer.health[t])];
+    return "Open Dice Roller for " + trait.name + " " + traitValue;
   };
   $scope.traitCell = function(explorer, t, h) {
     if (!explorer.character) return "";
@@ -110,6 +117,56 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     } else {
       return nbsp + " " + i + " " + nbsp;
     }
+  };
+
+  $scope.showDialog = false;
+  $scope.dice = [];
+  $scope.diceTotal = "";
+  $scope.showDiceRoller = function(explorer, t) {
+    var document = window.document;
+    var modalMaskDiv = getElementById("modalMask");
+    $scope.showDialog = true;
+    document.addEventListener("keydown", documentKeyListener);
+    function closeDialog() {
+      document.removeEventListener("keydown", documentKeyListener);
+      $scope.showDialog = false;
+    }
+    function documentKeyListener(event) {
+      // escape
+      if (event.keyCode !== 27) return;
+      closeDialog();
+      $scope.$apply();
+    }
+    var modalDialogDiv = getElementById("modalDialog");
+    modalDialogDiv.style.top = Math.floor(document.height / 10) + "px";
+    modalDialogDiv.style.left = Math.floor(document.width / 10) + "px";
+
+    var traitValue = $scope.traitTable(explorer)[t].values[clampHealth(explorer.health[t])];
+    setNumberOfDice(traitValue);
+
+    window.setTimeout(function() {
+      getElementById("rollButton").focus();
+    });
+  };
+  $scope.modifyDice = function(delta) {
+    setNumberOfDice($scope.dice.length + delta);
+  };
+  function setNumberOfDice(numberOfDice) {
+    $scope.dice = [];
+    for (var i = 0; i < numberOfDice; i++) {
+      $scope.dice.push("?");
+    }
+    $scope.diceTotal = "?";
+  }
+  $scope.rollDice = function() {
+    var total = 0;
+    var value;
+    for (var i = 0; i < $scope.dice.length; i++) {
+      value = Math.floor(Math.random() * 3);
+      $scope.dice[i] = value;
+      total += value;
+    }
+    $scope.diceTotal = total;
   };
 
   $scope.saveState = saveState;
@@ -156,4 +213,4 @@ function maybeClearState() {
   delete localStorage.betrayalState;
   // refresh page
   window.location.href = window.location.href;
-};
+}
