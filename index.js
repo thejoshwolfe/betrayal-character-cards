@@ -146,16 +146,28 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   $scope.modifyHealth = function(explorer, t, delta) {
     var healths = explorer.health;
     var value = healths[t];
-    if (value == null) value = $scope.character(explorer).traits[t].start;
-    healths[t] = clamp(value + delta, 0, $scope.healthValues.length - 1);
+    healths[t] = clamp(value + delta, 0, window.Infinity);
     saveState();
   };
-  $scope.cellClass = function(explorer, t, h) {
+  $scope.traitClass = function(explorer, t, h) {
     if (!explorer.character) return "";
     var styles = [];
     if ($scope.traitTable(explorer)[t].start === h) styles.push("starting");
-    if (explorer.health[t] === h) styles.push("current");
+    if (clampHealth(explorer.health[t]) === h) styles.push("current");
     return styles.join(" ");
+  };
+  $scope.traitCell = function(explorer, t, h) {
+    if (!explorer.character) return "";
+    var value = "" + $scope.traitTable(explorer)[t].values[h];
+    var currentHealth = explorer.health[t];
+    if (currentHealth === h) {
+      value = "[ " + value + " ]";
+    } else if (clampHealth(currentHealth) === h) {
+      // overflow health
+      var overflow = currentHealth - h;
+      value = "[" + value + "]+" + overflow;
+    }
+    return value;
   };
 
   $scope.modifyBigBar = function(delta) {
@@ -207,6 +219,10 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         explorers.splice(i + 1, 1);
       }
     }
+  }
+
+  function clampHealth(h) {
+    return clamp(h, 0, $scope.healthValues.length - 1);
   }
 
   function clamp(v, min, max) {

@@ -28,10 +28,8 @@
         <tr><th ng-repeat="trait in traitTable(explorer)" ng-class="character(explorer).colorClass">{{trait.name}}</th></tr>
         <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" ^ " ng-click="modifyHealth(explorer, t, 1)"></td></tr>
         <tr ng-repeat="h in healthValues">
-          <td ng-class="cellClass(explorer, t, h)" ng-repeat="t in traitIndexes">
-            <span ng-show="explorer.health[t] == h">[</span>
-            {{traitTable(explorer)[t].values[h]}}
-            <span ng-show="explorer.health[t] == h">]</span>
+          <td ng-class="traitClass(explorer, t, h)" ng-repeat="t in traitIndexes">
+            {{traitCell(explorer, t, h)}}
           </td>
         </tr>
         <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" v " ng-click="modifyHealth(explorer, t, -1)"></td></tr>
