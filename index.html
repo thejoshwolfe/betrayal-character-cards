@@ -18,6 +18,18 @@
         </tr>
       </table>
     </div>
+    <div class="large" style="float: left;" ng-show="state.showDiceRollBar">
+      <table stlye="background: #eee;">
+        <tr><td>Dice</td></tr>
+        <tr ng-repeat="d in [8,7,6,5,4,3,2,1]">
+          <td style="cursor:pointer; background:#ddd;"
+              title="Roll {{d}} dice"
+              ng-click="showDiceRoller(d)">
+            {{d}}
+          </td>
+        </tr>
+      </table>
+    </div>
     <div style="float: left;" ng-repeat="explorer in state.explorers">
       <select ng-model="explorer.character"
           ng-options="name as name group by character.colorClass for (name, character) in characters"
@@ -49,11 +61,15 @@
     <div style="clear:both;">
       <label><input id="showBigBar" type="checkbox" ng-checked="state.bigBarValue >= 0" ng-click="showHideBigBar()">Show Turn/Damage Tracker</label>
       <br>
+      <label><input type="checkbox" ng-model="state.showDiceRollBar" ng-change="saveState()">Show dice roll bar</label>
+      <br>
       <label>It Is Meant To Be: <input type="number" ng-model="state.itIsMeantToBe" ng-change="saveState()" min="0" max="8"></label>
       <br>
       <!-- the clear state button can be our only way to recover from corrupt state. don't trust angular with it -->
       <input type="button" value="Clear State" onclick="maybeClearState()">
     </div>
+
+    <!-- dice roller dialog -->
     <div id="modalMask" ng-show="showDialog" ng-click="showDialog = false"></div>
     <div id="modalDialog" ng-show="showDialog">
       Dice Roller

@@ -9,6 +9,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     explorers: [],
     bigBarValue: -1, // which means hidden
     itIsMeantToBe: null,
+    showDiceRollBar: false,
   };
 
   // for iteration purposes
@@ -150,7 +151,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     modalDialogDiv.style.top = Math.floor(document.height / 10) + "px";
     modalDialogDiv.style.left = Math.floor(document.width / 10) + "px";
 
-    var traitValue = $scope.traitTable(explorer)[t].values[clampHealth(explorer.health[t])];
+    var traitValue;
+    if (t != null) {
+      traitValue = $scope.traitTable(explorer)[t].values[clampHealth(explorer.health[t])];
+    } else {
+      traitValue = explorer;
+    }
     setNumberOfDice(traitValue);
 
     window.setTimeout(function() {
