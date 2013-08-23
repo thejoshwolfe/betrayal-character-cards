@@ -132,6 +132,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   $scope.showDialog = false;
   $scope.dice = [];
   $scope.diceTotal = "";
+  $scope.reroll = [];
   $scope.showDiceRoller = function(explorer, t) {
     var document = window.document;
     var modalMaskDiv = getElementById("modalMask");
@@ -168,18 +169,43 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   };
   function setNumberOfDice(numberOfDice) {
     $scope.dice = [];
+    $scope.reroll = [];
     for (var i = 0; i < numberOfDice; i++) {
       $scope.dice.push("?");
+      $scope.reroll.push(false);
     }
     $scope.diceTotal = "?";
   }
+  $scope.dieClass = function(i) {
+    return $scope.reroll[i] ? "reroll" : "";
+  };
+  $scope.selectDieForRerolling = function(i) {
+    // don't toggle unrolled dice
+    if (isNaN(parseInt($scope.dice[i], 10))) return;
+    $scope.reroll[i] = !$scope.reroll[i];
+  };
+  function rerollCount() {
+    var count = 0;
+    for (var i = 0; i < $scope.dice.length; i++) {
+      if ($scope.reroll[i]) count++;
+    }
+    return count;
+  }
+  $scope.rollButtonTitle = function () {
+    var count = rerollCount();
+    if (count === 0) return "Roll";
+    return "Reroll " + count + " Dice";
+  };
   $scope.rollDice = function() {
+    var rollAll = rerollCount() === 0;
     var total = 0;
     var value;
     for (var i = 0; i < $scope.dice.length; i++) {
-      value = Math.floor(Math.random() * 3);
-      $scope.dice[i] = value;
-      total += value;
+      if (rollAll || $scope.reroll[i]) {
+        $scope.dice[i] = Math.floor(Math.random() * 3);
+        $scope.reroll[i] = false;
+      }
+      total += $scope.dice[i];
     }
     $scope.diceTotal = total;
   };

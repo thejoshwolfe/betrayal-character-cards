@@ -75,7 +75,11 @@
       Dice Roller
       <table><tr>
         <td><input type="button" value=" &lt; " ng-click="modifyDice(-1)"></td>
-        <td ng-repeat="die in dice track by $index">
+        <td ng-repeat="die in dice track by $index"
+          ng-class="dieClass($index)"
+          style="cursor:pointer;"
+          title="Select for rerolling"
+          ng-click="selectDieForRerolling($index)">
           <span style="color: #888">[</span>
           {{die}}
           <span style="color: #888">]</span>
@@ -83,7 +87,7 @@
         <td><input type="button" value=" &gt; " ng-click="modifyDice(1)"></td>
       </tr></table>
       <div class="large">{{dice.length}} Dice: <span class="extraLarge">[ {{diceTotal}} ]</span></div>
-      <input id="rollButton" type="button" value="Roll" style="width: 100%" ng-click="rollDice()">
+      <input id="rollButton" type="button" value="{{rollButtonTitle()}}" style="width: 100%" ng-click="rollDice()">
     </div>
   </body>
 </html>
