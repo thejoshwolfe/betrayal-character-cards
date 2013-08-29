@@ -9,7 +9,7 @@
     <script src="data.js"></script>
   </head>
   <body ng-controller="MainCtrl">
-    <div ng-show="state.bigBarValue >= 0">
+    <div id="bigBar" ng-show="state.bigBarValue >= 0">
       <table>
         <tr>
           <td><input type="button" value=" &lt; " ng-click="modifyBigBar(-1)"></td>
@@ -30,7 +30,7 @@
         </tr>
       </table>
     </div>
-    <div style="float: left;" ng-repeat="explorer in state.explorers">
+    <div id="characterTraitBar" style="float: left;" ng-repeat="explorer in state.explorers">
       <select ng-model="explorer.character"
           ng-options="name as name group by character.colorClass for (name, character) in characters"
           ng-change="onCharacterSelect(explorer)"

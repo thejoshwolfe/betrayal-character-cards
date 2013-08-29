@@ -70,8 +70,22 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   $scope.traitCellClass = function(explorer, t, h) {
     if (!explorer.character) return "";
     var classes = [];
-    if ($scope.traitTable(explorer)[t].start === h) classes.push("starting");
-    if (clampHealth(explorer.health[t]) === h) classes.push("current");
+    if(clampHealth(explorer.health[t]) === h) {
+      classes.push("current");
+      classes.push("special");
+      if ($scope.traitTable(explorer)[t].start === h) {
+        classes.push("starting");
+      }
+    } else if ($scope.traitTable(explorer)[t].start === h) {
+      classes.push("starting");
+    } else {
+      if(("" + $scope.traitTable(explorer)[t].values[h]) === "0") {
+        classes.push("skull");
+      } else {
+        classes.push($scope.character(explorer).colorClass);
+      }
+      classes.push("cell");
+    }
     return classes.join(" ");
   };
   $scope.traitCellTitle = function(explorer, t) {
