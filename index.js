@@ -51,7 +51,11 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     }
   };
   $scope.onTraitColumnClick = function(explorer, t) {
+    // toggle upgraded state
     explorer.traitUpgraded[t] = !explorer.traitUpgraded[t];
+    // increment/decrement stat
+    var delta = explorer.traitUpgraded[t] ? 1 : -1;
+    explorer.health[t] += delta;
     saveState();
   };
   var upArrow = String.fromCharCode(0x2191);
