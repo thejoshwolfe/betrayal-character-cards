@@ -65,6 +65,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     var healths = explorer.health;
     var value = healths[t];
     healths[t] = clamp(value + delta, 0, window.Infinity);
+    if( healths[t] == 0 )
+    {
+      for (var i = healths.length - 1; i >= 0; i--) {
+        healths[i] = 0;
+      };
+    }
     saveState();
   };
   $scope.traitCellClass = function(explorer, t, h) {
