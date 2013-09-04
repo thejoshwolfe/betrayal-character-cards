@@ -163,8 +163,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       $scope.$apply();
     }
     var modalDialogDiv = getElementById("modalDialog");
-    modalDialogDiv.style.top = Math.floor(document.height / 10) + "px";
-    modalDialogDiv.style.left = Math.floor(document.width / 10) + "px";
+    modalDialogDiv.style.top = Math.floor(document.body.offsetHeight / 10) + "px";
+    modalDialogDiv.style.left = Math.floor(document.body.offsetWidth / 10) + "px";
 
     var traitValue;
     if (t != null) {
