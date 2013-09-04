@@ -8,11 +8,7 @@ table, select, input {
     font-size: 200%;
 }
 
-#bigBar td {
-    text-align: center;
-}
-
-#characterTraitBar td {
+#bigBar td, #characterTraitBar td, #diceBar td {
     text-align: center;
 }
 
