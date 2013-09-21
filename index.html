@@ -7,9 +7,18 @@
     <script src="angular.js"></script>
     <script src="index.js"></script>
     <script src="data.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="layout-default-latest.css" />
+    <script type="text/javascript" src="jquery-latest.js"></script>
+    <script type="text/javascript" src="jquery-ui-latest.js"></script>
+    <script type="text/javascript" src="jquery.layout-latest.min.js"></script>
+    <script src="layout.js"></script>
   </head>
   <body ng-controller="MainCtrl">
-    <div id="bigBar" ng-show="state.bigBarValue >= 0">
+
+<!-- manually attach allowOverflow method to pane -->
+<div class="ui-layout-north" onmouseover="myLayout.allowOverflow('north')" onmouseout="myLayout.resetOverflow(this)" align="center">
+  <div id="bigBar">
       <table>
         <tr>
           <td><input type="button" value=" &lt; " ng-click="modifyBigBar(-1)"></td>
@@ -18,18 +27,24 @@
         </tr>
       </table>
     </div>
-    <div id="diceBar" class="large" style="float: left;" ng-show="state.showDiceRollBar">
-      <table stlye="background: #eee;">
-        <tr><td>Dice</td></tr>
-        <tr ng-repeat="d in [8,7,6,5,4,3,2,1]">
-          <td style="cursor:pointer; background:#ddd;"
-              title="Roll {{d}} dice"
-              ng-click="showDiceRoller(d)">
-            {{d}}
-          </td>
-        </tr>
-      </table>
-    </div>
+</div>
+
+<div class="ui-layout-west" onmouseover="myLayout.allowOverflow('west')" onmouseout="myLayout.resetOverflow(this)">
+<div id="diceBar" class="large" style="float: left;">
+    <table stlye="background: #eee;">
+      <tr><td>Dice</td></tr>
+      <tr ng-repeat="d in [8,7,6,5,4,3,2,1]">
+        <td style="cursor:pointer; background:#ddd;"
+            title="Roll {{d}} dice"
+            ng-click="showDiceRoller(d)">
+          {{d}}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="ui-layout-center">
     <div id="characterTraitBar" style="float: left;" ng-repeat="explorer in state.explorers">
       <select ng-model="explorer.character"
           ng-options="name as name group by character.colorClass for (name, character) in characters"
@@ -59,10 +74,6 @@
       </table>
     </div>
     <div style="clear:both;">
-      <label><input id="showBigBar" type="checkbox" ng-checked="state.bigBarValue >= 0" ng-click="showHideBigBar()">Show Turn/Damage Tracker</label>
-      <br>
-      <label><input type="checkbox" ng-model="state.showDiceRollBar" ng-change="saveState()">Show dice roll bar</label>
-      <br>
       <label>It Is Meant To Be: <input type="number" ng-model="state.itIsMeantToBe" ng-change="saveState()" min="0" max="8"></label>
       <br>
       <!-- the clear state button can be our only way to recover from corrupt state. don't trust angular with it -->
@@ -89,5 +100,6 @@
       <div class="large">{{dice.length}} Dice: <span class="extraLarge">[ {{diceTotal}} ]</span></div>
       <input id="rollButton" type="button" value="{{rollButtonTitle()}}" style="width: 100%" ng-click="rollDice()">
     </div>
+</div>
   </body>
 </html>
