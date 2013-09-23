@@ -7,9 +7,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   // state is what's persisted in localStorage
   $scope.state = {
     explorers: [],
-    bigBarValue: -1, // which means hidden
+    bigBarValue: 0,
     itIsMeantToBe: null,
-    showDiceRollBar: false,
   };
 
   // for iteration purposes
