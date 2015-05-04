@@ -1,6 +1,9 @@
 table, select, input {
     font-size: 150%;
 }
+table {
+  border-spacing: 0px;
+}
 .large {
     font-size: 150%;
 }
