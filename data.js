@@ -120,8 +120,6 @@ window.Betrayal.characters = {
   }
 };
 
-// the below data is unused, but at least humans can refer to it for reference
-
 window.Betrayal.rooms = {
   "Abandoned Room":       {doors: "4", floors: " gb", symbol: "o"},
   "Attic":                {doors: "1", floors: "u  ", symbol: "e"},
@@ -172,46 +170,67 @@ window.Betrayal.rooms = {
   "Wine Cellar":          {doors: "I", floors: "  b", symbol: "i"},
 };
 
-window.Betrayal.omens = [
-  "Book",
-  "Bite",
-  "Crystal Ball",
-  "Dog",
-  "Girl",
-  "Holy Symbol",
-  "Madman",
-  "Mask",
-  "Medallion",
-  "Ring",
-  "Skull",
-  "Spear",
-  "Spirit Board",
-];
+window.Betrayal.omens = {
+  "Book": {
+    onGain: { "Knowl":  2 },
+    onLose: { "Knowl": -2 },
+  },
+  "Bite": {},
+  "Crystal Ball": {},
+  "Dog": {
+    onGain: { "Might":  1, "Sanity":  1 },
+    onLose: { "Might": -1, "Sanity": -1 },
+  },
+  "Girl": {
+    onGain: { "Sanity":  1, "Knowl":  1 },
+    onLose: { "Sanity": -1, "Knowl": -1 },
+  },
+  "Holy Symbol": {
+    onGain: { "Sanity":  2 },
+    onLose: { "Sanity": -2 },
+  },
+  "Madman": {
+    onGain: { "Might":  2, "Sanity": -1 },
+    onLose: { "Might": -2, "Sanity":  1 },
+  },
+  "Mask": {},
+  "Medallion": {},
+  "Ring": {},
+  "Skull": {},
+  "Spear": {},
+  "Spirit Board": {},
+};
 
-window.Betrayal.items = [
-  "Adrenaline Shot",
-  "Amulet of the Ages",
-  "Angel Feather",
-  "Armor",
-  "Axe",
-  "Bell",
-  "Blood Dagger",
-  "Bottle",
-  "Candle",
-  "Dark Dice",
-  "Dynamite",
-  "Healing Salve",
-  "Idol",
-  "Lucky Stone",
-  "Medical Kit",
-  "Music Box",
-  "Pickpocket's Gloves",
-  "Puzzle Box",
-  "Rabbit's Foot",
-  "Revolver",
-  "Sacrificial Dagger",
-  "Smelling Salts",
-];
+window.Betrayal.items = {
+  "Adrenaline Shot": {},
+  "Amulet of the Ages": {
+    onGain: { "Speed":  1, "Might":  1, "Sanity":  1, "Knowl":  1 },
+    onLose: { "Speed": -3, "Might": -3, "Sanity": -3, "Knowl": -3 },
+  },
+  "Angel Feather": {},
+  "Armor": {},
+  "Axe": {},
+  "Bell": {
+    onGain: { "Sanity":  1 },
+    onLose: { "Sanity": -1 },
+  },
+  "Blood Dagger": {},
+  "Bottle": {},
+  "Candle": {},
+  "Dark Dice": {},
+  "Dynamite": {},
+  "Healing Salve": {},
+  "Idol": {},
+  "Lucky Stone": {},
+  "Medical Kit": {},
+  "Music Box": {},
+  "Pickpocket's Gloves": {},
+  "Puzzle Box": {},
+  "Rabbit's Foot": {},
+  "Revolver": {},
+  "Sacrificial Dagger": {},
+  "Smelling Salts": {},
+};
 
 window.Betrayal.events = [
   "A Moment of Hope",
