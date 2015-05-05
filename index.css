@@ -1,5 +1,5 @@
 table, select, input {
-    font-size: 150%;
+    font-size: 125%;
 }
 table {
   border-spacing: 0px;
@@ -11,7 +11,7 @@ table {
     font-size: 200%;
 }
 
-#bigBar td, #characterTraitBar td, #diceBar td {
+#bigBar td, #diceBar td, .center {
     text-align: center;
 }
 
@@ -35,6 +35,17 @@ table {
 }
 
 .skull {}
+
+.even {
+    background: #ddd;
+}
+
+.item {
+    background: #fc6;
+}
+.omen {
+    background: #0f0;
+}
 
 .monospace {
     font-family: monospace;

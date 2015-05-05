@@ -7,8 +7,10 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   // state is what's persisted in localStorage
   $scope.state = {
     explorers: [],
+    eventDeck: shuffled(window.Betrayal.events),
+    itemDeck: shuffled(Object.keys(window.Betrayal.items)),
+    omenDeck: shuffled(Object.keys(window.Betrayal.omens)),
     bigBarValue: -1, // which means hidden
-    itIsMeantToBe: null,
     showDiceRollBar: false,
   };
 
@@ -31,6 +33,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         explorer.health[t] = $scope.character(explorer).traits[t].start || 0;
         explorer.traitUpgraded[t] = false;
       }
+      explorer.inventory = [];
     }
     fixupExplorerList();
     saveState();
@@ -121,6 +124,37 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     }
     return value;
   };
+  $scope.drawEvent = function(explorer) {
+    var name = $scope.state.eventDeck.pop();
+    saveState();
+    alert(name);
+  };
+  $scope.drawItem = function(explorer) {
+    var name = $scope.state.itemDeck.pop();
+    getItem(explorer, "item", name);
+  };
+  $scope.drawOmen = function(explorer) {
+    var name = $scope.state.omenDeck.pop();
+    getItem(explorer, "omen", name);
+  };
+  function getItem(explorer, type, name) {
+    var item = { name: name, type: type };
+    explorer.inventory.push(item);
+    saveState();
+  }
+
+  $scope.eventDeckDisplay = function() {
+    return $scope.state.eventDeck.length + "/" + window.Betrayal.events.length;
+  };
+  $scope.itemDeckDisplay = function() {
+    return $scope.state.itemDeck.length + "/" + Object.keys(window.Betrayal.items).length;
+  };
+  $scope.omenDeckDisplay = function() {
+    return $scope.state.omenDeck.length + "/" + Object.keys(window.Betrayal.omens).length;
+  };
+  $scope.itemClass = function(item) {
+    return item.type;
+  }
 
   $scope.modifyBigBar = function(delta) {
     $scope.state.bigBarValue = clamp($scope.state.bigBarValue + delta, 0, 12);
@@ -259,17 +293,27 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   function clamp(v, min, max) {
     return v < min ? min : v > max ? max : v;
   }
-  function getElementById(id) {
-    return window.document.getElementById(id);
-  }
-
   loadState();
   fixupExplorerList();
 });
 
+function getElementById(id) {
+  return window.document.getElementById(id);
+}
 function maybeClearState() {
   if (!window.confirm("Reset to default state?")) return;
   delete localStorage.betrayalState;
   // refresh page
   window.location.href = window.location.href;
+}
+function shuffled(array) {
+  array = array.slice(0);
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    if (i === j) continue;
+    var tmp = array[i];
+    array[i] = array[j];
+    array[j] = tmp;
+  }
+  return array;
 }

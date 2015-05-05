@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" type="text/css" href="index.css"/>
     <script src="angular.js"></script>
-    <script src="index.js"></script>
     <script src="data.js"></script>
+    <script src="index.js"></script>
   </head>
   <body ng-controller="MainCtrl">
     <div id="bigBar" ng-show="state.bigBarValue >= 0">
@@ -30,7 +30,7 @@
         </tr>
       </table>
     </div>
-    <div id="characterTraitBar" style="float: left;" ng-repeat="explorer in state.explorers">
+    <div ng-repeat="explorer in state.explorers" style="float: left;" ng-class-even="'even'">
       <select ng-model="explorer.character"
           ng-options="name as name group by character.colorClass for (name, character) in characters"
           ng-change="onCharacterSelect(explorer)"
@@ -49,6 +49,7 @@
         <tr ng-repeat="h in healthValues">
           <td ng-repeat="t in traitIndexes"
               ng-class="traitCellClass(explorer, t, h)"
+              class="center"
               style="cursor:pointer;"
               title="{{traitCellTitle(explorer, t)}}"
               ng-click="showDiceRoller(explorer, t)">
@@ -57,16 +58,25 @@
         </tr>
         <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" v " ng-click="modifyHealth(explorer, t, -1)"></td></tr>
       </table>
+      <div ng-show="explorer.character">
+        <ul style="margin: 0; list-style: none; padding-left: 1em;">
+          <li ng-repeat="item in explorer.inventory">
+            <span ng-class="itemClass(item)">{{item.name}}</span>
+          </li>
+        </ul>
+        <input type="button" value="+Event" ng-click="drawEvent(explorer)">
+        <input type="button" value="+Item" ng-click="drawItem(explorer)">
+        <input type="button" value="+Omen" ng-click="drawOmen(explorer)">
+      </div>
     </div>
     <div style="clear:both;">
       <label><input id="showBigBar" type="checkbox" ng-checked="state.bigBarValue >= 0" ng-click="showHideBigBar()">Show Turn/Damage Tracker</label>
-      <br>
       <label><input type="checkbox" ng-model="state.showDiceRollBar" ng-change="saveState()">Show dice roll bar</label>
       <br>
-      <label>It Is Meant To Be: <input type="number" ng-model="state.itIsMeantToBe" ng-change="saveState()" min="0" max="8"></label>
+      Event Deck: {{eventDeckDisplay()}}. Item Deck: {{itemDeckDisplay()}}. Omen Deck: {{omenDeckDisplay()}}.
       <br>
       <!-- the clear state button can be our only way to recover from corrupt state. don't trust angular with it -->
-      <input type="button" value="Clear State" onclick="maybeClearState()">
+      <input type="button" value="New Game" onclick="maybeClearState()">
     </div>
 
     <!-- dice roller dialog -->
