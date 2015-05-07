@@ -82,9 +82,11 @@
       <input type="button" value="New Game" onclick="maybeClearState()">
     </div>
 
+    <!-- dialogs -->
+    <div id="modalMask" ng-show="showDialog != null" ng-click="showDialog = null"></div>
+
     <!-- dice roller dialog -->
-    <div id="modalMask" ng-show="showDialog" ng-click="showDialog = false"></div>
-    <div id="modalDialog" ng-show="showDialog">
+    <div id="diceRollerDialog" ng-show="showDialog == 'diceRollerDialog'">
       Dice Roller
       <table><tr>
         <td><input type="button" value=" &lt; " ng-click="modifyDice(-1)"></td>
@@ -101,6 +103,16 @@
       </tr></table>
       <div class="large">{{dice.length}} Dice: <span class="extraLarge">[ {{diceTotal}} ]</span></div>
       <input id="rollButton" type="button" value="{{rollButtonTitle()}}" style="width: 100%" ng-click="rollDice()">
+    </div>
+
+    <!-- get card dialog -->
+    <div id="getCardDialog" ng-show="showDialog == 'getCardDialog'">
+      Get {{getCardDialog.type}} Card:<br>
+      <div><input type="button" value="Draw Top Card" ng-click="getCardDialog.drawTopCard()"></div>
+      <select ng-model="getCardDialog.specificCard" ng-options="card for card in getCardDialog.cards">
+        <option value="">-- select card --</option>
+      </select>
+      <input type="button" value="Get Specific Card" ng-click="getCardDialog.getSpecificCard()">
     </div>
   </body>
 </html>

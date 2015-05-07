@@ -133,17 +133,43 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     alert(name);
   };
   $scope.drawItem = function(explorer) {
-    var name = $scope.state.itemDeck.pop();
-    drawKeepCard(explorer, "item", name);
+    drawKeepCard(explorer, "Item");
   };
   $scope.drawOmen = function(explorer) {
-    var name = $scope.state.omenDeck.pop();
-    drawKeepCard(explorer, "omen", name);
+    drawKeepCard(explorer, "Omen");
   };
-  function drawKeepCard(explorer, type, name) {
-    var item = { name: name, type: type };
-    gainItem(explorer, item);
-    saveState();
+  function drawKeepCard(explorer, type) {
+    var cards = Object.keys(getDeckInfo(type));
+    cards.sort();
+    $scope.getCardDialog = {
+      type: type,
+      cards: cards,
+      drawTopCard: function() {
+        var name = getCardDeck(type).pop();
+        gainSpecificCard(name);
+      },
+      specificCard: "",
+      getSpecificCard: function() {
+        var name = $scope.getCardDialog.specificCard;
+        if (getDeckInfo(type)[name] == null) return;
+        var deck = getCardDeck(type);
+        var index = deck.indexOf(name);
+        if (index !== -1) {
+          deck.splice(index, 1);
+          // otherwise, we're duplicating it. whatever.
+        }
+        gainSpecificCard(name);
+      },
+    };
+
+    var closeDialog = showThisDialog("getCardDialog");
+
+    function gainSpecificCard(name) {
+      var item = { name: name, type: type };
+      gainItem(explorer, item);
+      closeDialog();
+      saveState();
+    }
   }
   $scope.discard = function(explorer, item) {
     loseItem(explorer, item);
@@ -173,9 +199,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     }
   }
   function getCardInfo(card) {
-    switch (card.type) {
-      case "item": return window.Betrayal.items[card.name];
-      case "omen": return window.Betrayal.omens[card.name];
+    return getDeckInfo(card.type)[card.name];
+  }
+  function getDeckInfo(type) {
+    switch (type) {
+      case "Item": return window.Betrayal.items;
+      case "Omen": return window.Betrayal.omens;
+    }
+    throw new Error();
+  }
+  function getCardDeck(type) {
+    switch (type) {
+      case "Item": return $scope.state.itemDeck;
+      case "Omen": return $scope.state.omenDeck;
     }
     throw new Error();
   }
@@ -218,28 +254,33 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     }
   };
 
-  $scope.showDialog = false;
-  $scope.dice = [];
-  $scope.diceTotal = "";
-  $scope.reroll = [];
-  $scope.showDiceRoller = function(explorer, t) {
+  $scope.showDialog = null;
+  function showThisDialog(dialogId) {
     var document = window.document;
     var modalMaskDiv = getElementById("modalMask");
-    $scope.showDialog = true;
+    $scope.showDialog = dialogId;
     document.addEventListener("keydown", documentKeyListener);
-    function closeDialog() {
-      document.removeEventListener("keydown", documentKeyListener);
-      $scope.showDialog = false;
-    }
     function documentKeyListener(event) {
       // escape
       if (event.keyCode !== 27) return;
       closeDialog();
       $scope.$apply();
     }
-    var modalDialogDiv = getElementById("modalDialog");
+    function closeDialog() {
+      document.removeEventListener("keydown", documentKeyListener);
+      $scope.showDialog = null;
+    }
+    var modalDialogDiv = getElementById(dialogId);
     modalDialogDiv.style.top = Math.floor(document.body.offsetHeight / 10) + "px";
     modalDialogDiv.style.left = Math.floor(document.body.offsetWidth / 10) + "px";
+    return closeDialog;
+  }
+
+  $scope.dice = [];
+  $scope.diceTotal = "";
+  $scope.reroll = [];
+  $scope.showDiceRoller = function(explorer, t) {
+    showThisDialog("diceRollerDialog");
 
     var traitValue;
     if (t != null) {

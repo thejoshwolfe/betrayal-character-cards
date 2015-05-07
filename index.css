@@ -40,10 +40,10 @@ table {
     background: #ddd;
 }
 
-.item {
+.Item {
     background: #fc6;
 }
-.omen {
+.Omen {
     background: #0f0;
 }
 
@@ -70,7 +70,7 @@ table {
     opacity: 0.8;
 }
 
-#modalDialog {
+#diceRollerDialog {
     position: fixed;
     display: block;
     background: #ccf;
@@ -78,3 +78,8 @@ table {
 
 .reroll { background: #66f; }
 
+#getCardDialog {
+    position: fixed;
+    display: block;
+    background: #ccf;
+}
