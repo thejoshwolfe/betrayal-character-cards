@@ -59,14 +59,17 @@
         <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" v " ng-click="modifyHealth(explorer, t, -1)"></td></tr>
       </table>
       <div ng-show="explorer.character">
-        <ul style="margin: 0; list-style: none; padding-left: 1em;">
-          <li ng-repeat="item in explorer.inventory">
-            <span ng-class="itemClass(item)">{{item.name}}</span>
-          </li>
-        </ul>
-        <input type="button" value="+Event" ng-click="drawEvent(explorer)">
-        <input type="button" value="+Item" ng-click="drawItem(explorer)">
-        <input type="button" value="+Omen" ng-click="drawOmen(explorer)">
+        <table>
+          <tr ng-repeat="item in explorer.inventory">
+            <td ng-class="itemClass(item)">{{item.name}}</td>
+            <td><input type="button" value="X" style="font-size: 75%;" title="discard" ng-click="discard(explorer, item)"></td>
+            <td><input type="button" value="V" style="font-size: 75%;" title="drop" ng-click="dropItem(explorer, item)"></td>
+            <td><input type="button" value=">" style="font-size: 75%;" title="give" ng-click="giveItem(explorer, item)"></td>
+          </tr>
+        </table>
+        <input type="button" value="+Event" ng-disabled="eventDeckDisabled()" ng-click="drawEvent(explorer)">
+        <input type="button" value="+Item" ng-disabled="itemDeckDisabled()" ng-click="drawItem(explorer)">
+        <input type="button" value="+Omen" ng-disabled="omenDeckDisabled()" ng-click="drawOmen(explorer)">
       </div>
     </div>
     <div style="clear:both;">

@@ -23,6 +23,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
 
   // same order as traits
   $scope.upgradeRooms = ["Gymnasium", "Larder", "Chapel", "Library"];
+  var traitList = ["Speed", "Might", "Sanity", "Knowl"];
 
   $scope.onCharacterSelect = function(explorer) {
     if (explorer.character) {
@@ -58,7 +59,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     explorer.traitUpgraded[t] = !explorer.traitUpgraded[t];
     // increment/decrement stat
     var delta = explorer.traitUpgraded[t] ? 1 : -1;
-    explorer.health[t] += delta;
+    modifyHealthAndClamp(explorer, t, delta);
     saveState();
   };
   var upArrow = String.fromCharCode(0x2191);
@@ -69,11 +70,13 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     return result;
   };
   $scope.modifyHealth = function(explorer, t, delta) {
-    var healths = explorer.health;
-    var value = healths[t];
-    healths[t] = clamp(value + delta, 0, window.Infinity);
+    modifyHealthAndClamp(explorer, t, delta);
     saveState();
   };
+  function modifyHealthAndClamp(explorer, t, delta) {
+    var healths = explorer.health;
+    healths[t] = clamp(healths[t] + delta, 0, window.Infinity);
+  }
   $scope.traitCellClass = function(explorer, t, h) {
     if (!explorer.character) return "";
     var classes = [];
@@ -131,16 +134,50 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   };
   $scope.drawItem = function(explorer) {
     var name = $scope.state.itemDeck.pop();
-    getItem(explorer, "item", name);
+    drawKeepCard(explorer, "item", name);
   };
   $scope.drawOmen = function(explorer) {
     var name = $scope.state.omenDeck.pop();
-    getItem(explorer, "omen", name);
+    drawKeepCard(explorer, "omen", name);
   };
-  function getItem(explorer, type, name) {
+  function drawKeepCard(explorer, type, name) {
     var item = { name: name, type: type };
-    explorer.inventory.push(item);
+    gainItem(explorer, item);
     saveState();
+  }
+  $scope.discard = function(explorer, item) {
+    loseItem(explorer, item);
+    saveState();
+  };
+  function gainItem(explorer, item) {
+    explorer.inventory.push(item);
+    var cardInfo = getCardInfo(item);
+    if (cardInfo.onGain != null) {
+      for (var trait in cardInfo.onGain) {
+        var delta = cardInfo.onGain[trait];
+        var t = traitList.indexOf(trait);
+        modifyHealthAndClamp(explorer, t, delta);
+      }
+    }
+  }
+  function loseItem(explorer, item) {
+    var index = explorer.inventory.indexOf(item);
+    explorer.inventory.splice(index, 1);
+    var cardInfo = getCardInfo(item);
+    if (cardInfo.onLose != null) {
+      for (var trait in cardInfo.onLose) {
+        var delta = cardInfo.onLose[trait];
+        var t = traitList.indexOf(trait);
+        modifyHealthAndClamp(explorer, t, delta);
+      }
+    }
+  }
+  function getCardInfo(card) {
+    switch (card.type) {
+      case "item": return window.Betrayal.items[card.name];
+      case "omen": return window.Betrayal.omens[card.name];
+    }
+    throw new Error();
   }
 
   $scope.eventDeckDisplay = function() {
