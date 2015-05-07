@@ -5,14 +5,17 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   $scope.characters = window.Betrayal.characters;
 
   // state is what's persisted in localStorage
-  $scope.state = {
-    explorers: [],
-    eventDeck: shuffled(window.Betrayal.events),
-    itemDeck: shuffled(Object.keys(window.Betrayal.items)),
-    omenDeck: shuffled(Object.keys(window.Betrayal.omens)),
-    bigBarValue: -1, // which means hidden
-    showDiceRollBar: false,
-  };
+  resetState();
+  function resetState() {
+    $scope.state = {
+      explorers: [],
+      eventDeck: shuffled(window.Betrayal.events),
+      itemDeck: shuffled(Object.keys(window.Betrayal.items)),
+      omenDeck: shuffled(Object.keys(window.Betrayal.omens)),
+      bigBarValue: -1, // which means hidden
+      showDiceRollBar: false,
+    };
+  }
 
   // for iteration purposes
   $scope.traitIndexes = [0,1,2,3];
@@ -28,17 +31,20 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   $scope.onCharacterSelect = function(explorer) {
     if (explorer.character) {
       // a character is selected. initialize all the values.
-      explorer.health = [];
-      explorer.traitUpgraded = [];
-      for (var t = 0; t < $scope.traitIndexes.length; t++) {
-        explorer.health[t] = $scope.character(explorer).traits[t].start || 0;
-        explorer.traitUpgraded[t] = false;
-      }
-      explorer.inventory = [];
+      initExplorer(explorer);
     }
     fixupExplorerList();
     saveState();
   };
+  function initExplorer(explorer) {
+    explorer.health = [];
+    explorer.traitUpgraded = [];
+    for (var t = 0; t < $scope.traitIndexes.length; t++) {
+      explorer.health[t] = $scope.character(explorer).traits[t].start || 0;
+      explorer.traitUpgraded[t] = false;
+    }
+    explorer.inventory = [];
+  }
 
   $scope.character = function(explorer) {
     return $scope.characters[explorer.character] || {};
@@ -371,6 +377,30 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   function clamp(v, min, max) {
     return v < min ? min : v > max ? max : v;
   }
+
+  $scope.newGameFullRandom = function() {
+    if (!window.confirm("Reset everything and start a random game?")) return;
+    resetState();
+    var colorToCharacters = {};
+    for (var name in window.Betrayal.characters) {
+      var color = window.Betrayal.characters[name].colorClass;
+      if (color === "monster") continue;
+      if (colorToCharacters[color] == null) colorToCharacters[color] = [];
+      colorToCharacters[color].push(name);
+    }
+    var colors = shuffled(Object.keys(colorToCharacters));
+    var playerCount = 3 + Math.floor(Math.random() * 4);
+    for (var i = 0; i < playerCount; i++) {
+      var name = colorToCharacters[colors[i]][Math.floor(Math.random() * 2)];
+      var explorer = {character: name};
+      initExplorer(explorer);
+      $scope.state.explorers.push(explorer);
+    }
+    fixupExplorerList();
+    saveState();
+    $scope.$apply();
+  }
+
   loadState();
   fixupExplorerList();
 });
@@ -379,7 +409,7 @@ function getElementById(id) {
   return window.document.getElementById(id);
 }
 function maybeClearState() {
-  if (!window.confirm("Reset to default state?")) return;
+  if (!window.confirm("Reset everything?")) return;
   delete localStorage.betrayalState;
   // refresh page
   window.location.href = window.location.href;
