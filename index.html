@@ -46,7 +46,9 @@
             ng-click="onTraitColumnClick(explorer, t)">
           {{traitColumnText(explorer, t)}}
         </th></tr>
-        <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" ^ " ng-click="modifyHealth(explorer, t, 1)"></td></tr>
+        <tr><td ng-repeat="t in traitIndexes">
+          <input type="button" value=" ^ " ng-click="modifyHealth(explorer, t, 1)" ng-class="traitButtonClass(explorer, t)">
+        </td></tr>
         <tr ng-repeat="h in healthValues">
           <td ng-repeat="t in traitIndexes"
               ng-class="traitCellClass(explorer, t, h)"
@@ -57,7 +59,9 @@
             {{traitCell(explorer, t, h)}}
           </td>
         </tr>
-        <tr><td ng-repeat="t in traitIndexes"><input type="button" value=" v " ng-click="modifyHealth(explorer, t, -1)"></td></tr>
+        <tr><td ng-repeat="t in traitIndexes">
+          <input type="button" value=" v " ng-click="modifyHealth(explorer, t, -1)" ng-class="traitButtonClass(explorer, t)">
+        </td></tr>
       </table>
       <div ng-show="explorer.character">
         <table>

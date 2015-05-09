@@ -10,6 +10,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     $scope.state = {
       explorers: [],
       currentTurnIndex: -1,
+      selectTraitIndex: -1,
       eventDeck: shuffled(window.Betrayal.events),
       itemDeck: shuffled(Object.keys(window.Betrayal.items)),
       omenDeck: shuffled(Object.keys(window.Betrayal.omens)),
@@ -107,6 +108,11 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       classes.push("cell");
     }
     return classes.join(" ");
+  };
+  $scope.traitButtonClass = function(explorer, t) {
+    if ($scope.state.explorers[$scope.state.currentTurnIndex] !== explorer) return "";
+    if ($scope.state.selectTraitIndex !== t) return "";
+    return "selectedTrait";
   };
   $scope.traitCellTitle = function(explorer, t) {
     if (!explorer.character) return "";
@@ -278,10 +284,16 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     switch (event.keyCode) {
       case 27: // Escape
         if (closeDialog()) break;
-        $scope.state.currentTurnIndex = -1;
+        if ($scope.state.selectTraitIndex !== -1) $scope.state.selectTraitIndex = -1;
+        else $scope.state.currentTurnIndex = -1;
         break;
       case 32: // Space
         if ($scope.showDialog != null) return;
+        if ($scope.state.selectTraitIndex !== -1) {
+          $scope.showDiceRollerForTrait($scope.state.explorers[$scope.state.currentTurnIndex], $scope.state.selectTraitIndex);
+          $scope.state.selectTraitIndex = -1;
+          break;
+        }
         var playerCount = $scope.state.explorers.length - 1;
         if (playerCount !== 0) {
           $scope.state.currentTurnIndex = ($scope.state.currentTurnIndex + 1) % playerCount;
@@ -289,6 +301,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           $scope.state.currentTurnIndex = -1;
         }
         break;
+
       case "D".charCodeAt(0):
         $scope.showDiceRoller(6);
         break;
@@ -301,9 +314,38 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "6".charCodeAt(0): case 102: $scope.showDiceRoller(6); break;
       case "7".charCodeAt(0): case 103: $scope.showDiceRoller(7); break;
       case "8".charCodeAt(0): case 104: $scope.showDiceRoller(8); break;
+
+      case 37: // Left
+        var delta = -1;
+      case 39: // Right
+        if (delta == null) delta = 1;
+        if ($scope.showDialog === "diceRollerDialog") {
+          $scope.modifyDice(delta);
+        } else if ($scope.showDialog == null) {
+          // select trait
+          $scope.state.selectTraitIndex = clamp($scope.state.selectTraitIndex + delta, 0, 3);
+        }
+        break;
+
+      case 40: // Down
+        var delta = -1;
+      case 38: // Up
+        if (delta == null) delta = 1;
+        if ($scope.showDialog === "diceRollerDialog") {
+          $scope.modifyDice(delta);
+        } else if ($scope.showDialog == null) {
+          if ($scope.state.selectTraitIndex !== -1) {
+            // modify trait
+            $scope.modifyHealth($scope.state.explorers[$scope.state.currentTurnIndex], $scope.state.selectTraitIndex, delta);
+          }
+        }
+        break;
+
       default:
         return;
     }
+    event.preventDefault();
+    saveState();
     $scope.$apply();
   }
   function closeDialog() {
