@@ -30,7 +30,8 @@
         </tr>
       </table>
     </div>
-    <div ng-repeat="explorer in state.explorers" style="float: left;" ng-class-even="'even'">
+    <div ng-repeat="explorer in state.explorers" style="float: left;"
+        ng-class-even="'even'" ng-class="explorerClass(explorer)">
       <select ng-model="explorer.character"
           ng-options="name as name group by character.colorClass for (name, character) in characters"
           ng-change="onCharacterSelect(explorer)"

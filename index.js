@@ -9,6 +9,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   function resetState() {
     $scope.state = {
       explorers: [],
+      currentTurnIndex: -1,
       eventDeck: shuffled(window.Betrayal.events),
       itemDeck: shuffled(Object.keys(window.Betrayal.items)),
       omenDeck: shuffled(Object.keys(window.Betrayal.omens)),
@@ -28,6 +29,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   $scope.upgradeRooms = ["Gymnasium", "Larder", "Chapel", "Library"];
   var traitList = ["Speed", "Might", "Sanity", "Knowl"];
 
+  $scope.explorerClass = function(explorer) {
+    return explorer === $scope.state.explorers[$scope.state.currentTurnIndex] ? "currentTurn" : "";
+  };
   $scope.onCharacterSelect = function(explorer) {
     if (explorer.character) {
       // a character is selected. initialize all the values.
@@ -168,7 +172,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       },
     };
 
-    var closeDialog = showThisDialog("getCardDialog");
+    showThisDialog("getCardDialog");
 
     function gainSpecificCard(name) {
       var item = { name: name, type: type };
@@ -265,21 +269,38 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     var document = window.document;
     var modalMaskDiv = getElementById("modalMask");
     $scope.showDialog = dialogId;
-    document.addEventListener("keydown", documentKeyListener);
-    function documentKeyListener(event) {
-      // escape
-      if (event.keyCode !== 27) return;
-      closeDialog();
-      $scope.$apply();
-    }
-    function closeDialog() {
-      document.removeEventListener("keydown", documentKeyListener);
-      $scope.showDialog = null;
-    }
     var modalDialogDiv = getElementById(dialogId);
     modalDialogDiv.style.top = Math.floor(document.body.offsetHeight / 10) + "px";
     modalDialogDiv.style.left = Math.floor(document.body.offsetWidth / 10) + "px";
-    return closeDialog;
+  }
+  document.addEventListener("keydown", documentKeyListener);
+  function documentKeyListener(event) {
+    // escape
+    switch (event.keyCode) {
+      case 27: // Escape
+        if (closeDialog()) break;
+        $scope.state.currentTurnIndex = -1;
+        break;
+      case 32: // Space
+        if ($scope.showDialog != null) return;
+        var playerCount = $scope.state.explorers.length - 1;
+        if (playerCount !== 0) {
+          $scope.state.currentTurnIndex = ($scope.state.currentTurnIndex + 1) % playerCount;
+        } else {
+          $scope.state.currentTurnIndex = -1;
+        }
+        break;
+      default:
+        return;
+    }
+    $scope.$apply();
+  }
+  function closeDialog() {
+    if ($scope.showDialog != null) {
+      $scope.showDialog = null;
+      return true;
+    }
+    return false;
   }
 
   $scope.dice = [];
@@ -396,9 +417,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       initExplorer(explorer);
       $scope.state.explorers.push(explorer);
     }
+    $scope.state.currentTurnIndex = Math.floor(Math.random() * playerCount);
     fixupExplorerList();
     saveState();
-    $scope.$apply();
   }
 
   loadState();

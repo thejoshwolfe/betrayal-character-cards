@@ -1,5 +1,7 @@
 table, select, input {
     font-size: 125%;
+    margin-left: auto;
+    margin-right: auto;
 }
 table {
   border-spacing: 0px;
@@ -38,6 +40,10 @@ table {
 
 .even {
     background: #ddd;
+}
+
+.currentTurn {
+    border: 3px solid black;
 }
 
 .Item {
