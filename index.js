@@ -275,7 +275,6 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   }
   document.addEventListener("keydown", documentKeyListener);
   function documentKeyListener(event) {
-    // escape
     switch (event.keyCode) {
       case 27: // Escape
         if (closeDialog()) break;
@@ -290,6 +289,18 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           $scope.state.currentTurnIndex = -1;
         }
         break;
+      case "D".charCodeAt(0):
+        $scope.showDiceRoller(6);
+        break;
+      // numbers above qwerty. numpad.
+      case "1".charCodeAt(0): case 97:  $scope.showDiceRoller(1); break;
+      case "2".charCodeAt(0): case 98:  $scope.showDiceRoller(2); break;
+      case "3".charCodeAt(0): case 99:  $scope.showDiceRoller(3); break;
+      case "4".charCodeAt(0): case 100: $scope.showDiceRoller(4); break;
+      case "5".charCodeAt(0): case 101: $scope.showDiceRoller(5); break;
+      case "6".charCodeAt(0): case 102: $scope.showDiceRoller(6); break;
+      case "7".charCodeAt(0): case 103: $scope.showDiceRoller(7); break;
+      case "8".charCodeAt(0): case 104: $scope.showDiceRoller(8); break;
       default:
         return;
     }
@@ -306,15 +317,13 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   $scope.dice = [];
   $scope.diceTotal = "";
   $scope.reroll = [];
-  $scope.showDiceRoller = function(explorer, t) {
+  $scope.showDiceRollerForTrait = function(explorer, t) {
+    var traitValue = $scope.traitTable(explorer)[t].values[clampHealth(explorer.health[t])];
+    $scope.showDiceRoller(traitValue);
+  };
+  $scope.showDiceRoller = function(traitValue) {
     showThisDialog("diceRollerDialog");
 
-    var traitValue;
-    if (t != null) {
-      traitValue = $scope.traitTable(explorer)[t].values[clampHealth(explorer.health[t])];
-    } else {
-      traitValue = explorer;
-    }
     setNumberOfDice(traitValue);
 
     window.setTimeout(function() {
