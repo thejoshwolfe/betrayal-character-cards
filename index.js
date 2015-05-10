@@ -323,7 +323,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           $scope.modifyDice(delta);
         } else if ($scope.showDialog == null) {
           // select trait
-          $scope.state.selectTraitIndex = clamp($scope.state.selectTraitIndex + delta, 0, 3);
+          if ($scope.state.selectTraitIndex === -1) {
+            // from blank, select middle two
+            $scope.state.selectTraitIndex = 1.5 + delta / 2;
+          } else {
+            $scope.state.selectTraitIndex = clamp($scope.state.selectTraitIndex + delta, 0, 3);
+          }
         }
         break;
 
