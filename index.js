@@ -321,7 +321,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         if (delta == null) delta = 1;
         if ($scope.showDialog === "diceRollerDialog") {
           $scope.modifyDice(delta);
-        } else if ($scope.showDialog == null) {
+        } else if ($scope.showDialog == null && $scope.state.currentTurnIndex !== -1) {
           // select trait
           if ($scope.state.selectTraitIndex === -1) {
             // from blank, select middle two
@@ -338,11 +338,25 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         if (delta == null) delta = 1;
         if ($scope.showDialog === "diceRollerDialog") {
           $scope.modifyDice(delta);
-        } else if ($scope.showDialog == null) {
+        } else if ($scope.showDialog == null && $scope.state.currentTurnIndex !== -1) {
           if ($scope.state.selectTraitIndex !== -1) {
             // modify trait
             $scope.modifyHealth($scope.state.explorers[$scope.state.currentTurnIndex], $scope.state.selectTraitIndex, delta);
           }
+        }
+        break;
+
+      case "P".charCodeAt(0):
+        var traitIndex = 0;
+      case "M".charCodeAt(0):
+        if (traitIndex == null) traitIndex = 1;
+      case "A".charCodeAt(0):
+        if (traitIndex == null) traitIndex = 2;
+      case "K".charCodeAt(0):
+        if (traitIndex == null) traitIndex = 3;
+        if ($scope.showDialog == null && $scope.state.currentTurnIndex !== -1) {
+          // select trait
+          $scope.state.selectTraitIndex = traitIndex;
         }
         break;
 
