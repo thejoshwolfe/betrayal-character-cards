@@ -92,7 +92,7 @@
     <div id="modalMask" ng-show="showDialog != null" ng-click="showDialog = null"></div>
 
     <!-- dice roller dialog -->
-    <div id="diceRollerDialog" ng-show="showDialog == 'diceRollerDialog'">
+    <div id="diceRollerDialog" class="dialog" ng-show="showDialog == 'diceRollerDialog'">
       Dice Roller
       <table><tr>
         <td><input type="button" value=" &lt; " ng-click="modifyDice(-1)"></td>
@@ -112,13 +112,22 @@
     </div>
 
     <!-- get card dialog -->
-    <div id="getCardDialog" ng-show="showDialog == 'getCardDialog'">
+    <div id="getCardDialog" class="dialog" ng-show="showDialog == 'getCardDialog'">
       Get {{getCardDialog.type}} Card:<br>
       <div><input type="button" id="drawTopCardButton" value="Draw Top Card" ng-click="getCardDialog.drawTopCard()"></div>
       <select ng-model="getCardDialog.specificCard" ng-options="card for card in getCardDialog.cards">
         <option value="">-- select card --</option>
       </select>
       <input type="button" value="Get Specific Card" ng-click="getCardDialog.getSpecificCard()">
+    </div>
+
+    <!-- do card dialog -->
+    <div id="doCardDialog" class="dialog" ng-show="showDialog == 'doCardDialog'">
+      <p>You got:</p>
+      <h1>{{doCardDialog.name}}</h1>
+      <input type="button" id="doItButton" value="{{doCardDialog.doItName}}" ng-click="doCardDialog.doIt()">
+      <input type="button" value="Discard" ng-click="doCardDialog.discard()">
+      <input type="button" value="Just Keep It" ng-click="doCardDialog.keep()">
     </div>
   </body>
 </html>

@@ -186,9 +186,36 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       if (getCardInfo(item).keep !== false) {
         gainItem(explorer, item);
       }
-      alert(name);
       closeDialog();
       saveState();
+
+      var doItFunction = getDoCardFunction(item);
+      var doItButtonName = "Do It";
+      if (doItFunction === closeDialog) doItButtonName = "OK";
+      if (doItFunction == null) {
+        doItFunction = closeDialog;
+        doItButtonName = "Do It Yourself";
+      }
+      $scope.doCardDialog = {
+        name: name,
+        doItName: doItButtonName,
+        doIt: doItFunction,
+        discard: function() {
+          $scope.discard(explorer, item);
+          closeDialog();
+        },
+        keep: function() {
+          if (getCardInfo(item).keep === false) {
+            gainItem(explorer, item);
+            saveState();
+          }
+          closeDialog();
+        },
+      };
+      showThisDialog("doCardDialog");
+      setTimeout(function() {
+        getElementById("doItButton").focus();
+      }, 0);
     }
   }
   $scope.discard = function(explorer, item) {
@@ -208,6 +235,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   }
   function loseItem(explorer, item) {
     var index = explorer.inventory.indexOf(item);
+    if (index === -1) return;
     explorer.inventory.splice(index, 1);
     var cardInfo = getCardInfo(item);
     if (cardInfo.onLose != null) {
@@ -234,6 +262,96 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Event": return $scope.state.eventDeck;
       case "Item": return $scope.state.itemDeck;
       case "Omen": return $scope.state.omenDeck;
+    }
+    throw new Error();
+  }
+  function getDoCardFunction(card) {
+    switch (card.name) {
+      case "Book":
+      case "Crystal Ball":
+      case "Dog":
+      case "Girl":
+      case "Holy Symbol":
+      case "Madman":
+      case "Mask":
+      case "Medallion":
+      case "Ring":
+      case "Skull":
+      case "Spear":
+      case "Spirit Board":
+        return closeDialog;
+      case "Bite": return null;
+
+      case "Adrenaline Shot":
+      case "Amulet of the Ages":
+      case "Angel Feather":
+      case "Armor":
+      case "Axe":
+      case "Bell":
+      case "Blood Dagger":
+      case "Bottle":
+      case "Candle":
+      case "Dark Dice":
+      case "Dynamite":
+      case "Healing Salve":
+      case "Idol":
+      case "Lucky Stone":
+      case "Medical Kit":
+      case "Music Box":
+      case "Pickpocket's Gloves":
+      case "Puzzle Box":
+      case "Rabbit's Foot":
+      case "Revolver":
+      case "Sacrificial Dagger":
+      case "Smelling Salts":
+        return closeDialog;
+
+      case "A Moment of Hope":
+      case "Angry Being":
+      case "Burning Man":
+      case "Bloody Vision":
+      case "Closet Door":
+      case "Creepy Crawlies":
+      case "Creepy Puppet":
+      case "Debris":
+      case "Disquieting Sounds":
+      case "Drip ... Drip ... Drip ...":
+      case "Footsteps":
+      case "Funeral":
+      case "Grave Dirt":
+      case "Groundskeeper":
+      case "Hanged Men":
+      case "Hideous Shriek":
+      case "Image in the Mirror (give)":
+      case "Image in the Mirror (take)":
+      case "It is Meant to Be":
+      case "Jonah's Turn":
+      case "Lights Out":
+      case "Locked Safe":
+      case "Mists from the Walls":
+      case "Mystic Slide":
+      case "Night View":
+      case "Phone Call":
+      case "Possession":
+      case "Revolving Wall":
+      case "Rotten":
+      case "Secret Passage":
+      case "Secret Stairs":
+      case "Shrieking Wind":
+      case "Silence":
+      case "Skeletons":
+      case "Smoke":
+      case "Something Hidden":
+      case "Something Slimy":
+      case "Spider":
+      case "The Beckoning":
+      case "The Lost One":
+      case "The Voice":
+      case "The Walls":
+      case "Webs":
+      case "What the...?":
+      case "Whoops!":
+        return null;
     }
     throw new Error();
   }

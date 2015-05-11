@@ -82,7 +82,7 @@ table {
     opacity: 0.8;
 }
 
-#diceRollerDialog {
+.dialog {
     position: fixed;
     display: block;
     background: #ccf;
@@ -90,8 +90,3 @@ table {
 
 .reroll { background: #66f; }
 
-#getCardDialog {
-    position: fixed;
-    display: block;
-    background: #ccf;
-}
