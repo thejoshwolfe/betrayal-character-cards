@@ -11,7 +11,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       explorers: [],
       currentTurnIndex: -1,
       selectTraitIndex: -1,
-      eventDeck: shuffled(window.Betrayal.events),
+      eventDeck: shuffled(Object.keys(window.Betrayal.events)),
       itemDeck: shuffled(Object.keys(window.Betrayal.items)),
       omenDeck: shuffled(Object.keys(window.Betrayal.omens)),
       bigBarValue: -1, // which means hidden
@@ -144,9 +144,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     return value;
   };
   $scope.drawEvent = function(explorer) {
-    var name = $scope.state.eventDeck.pop();
-    saveState();
-    alert(name);
+    drawKeepCard(explorer, "Event");
   };
   $scope.drawItem = function(explorer) {
     drawKeepCard(explorer, "Item");
@@ -179,10 +177,16 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     };
 
     showThisDialog("getCardDialog");
+    window.setTimeout(function() {
+      document.getElementById("drawTopCardButton").focus();
+    }, 0);
 
     function gainSpecificCard(name) {
       var item = { name: name, type: type };
-      gainItem(explorer, item);
+      if (getCardInfo(item).keep !== false) {
+        gainItem(explorer, item);
+      }
+      alert(name);
       closeDialog();
       saveState();
     }
@@ -219,6 +223,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   }
   function getDeckInfo(type) {
     switch (type) {
+      case "Event": return window.Betrayal.events;
       case "Item": return window.Betrayal.items;
       case "Omen": return window.Betrayal.omens;
     }
@@ -226,6 +231,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   }
   function getCardDeck(type) {
     switch (type) {
+      case "Event": return $scope.state.eventDeck;
       case "Item": return $scope.state.itemDeck;
       case "Omen": return $scope.state.omenDeck;
     }
@@ -233,7 +239,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   }
 
   $scope.eventDeckDisplay = function() {
-    return $scope.state.eventDeck.length + "/" + window.Betrayal.events.length;
+    return $scope.state.eventDeck.length + "/" + Object.keys(window.Betrayal.events).length;
   };
   $scope.itemDeckDisplay = function() {
     return $scope.state.itemDeck.length + "/" + Object.keys(window.Betrayal.items).length;
@@ -329,7 +335,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           } else {
             $scope.state.selectTraitIndex = clamp($scope.state.selectTraitIndex + delta, 0, 3);
           }
-        }
+        } else return;
         break;
 
       case 40: // Down
@@ -343,7 +349,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             // modify trait
             $scope.modifyHealth($scope.state.explorers[$scope.state.currentTurnIndex], $scope.state.selectTraitIndex, delta);
           }
-        }
+        } else return;
         break;
 
       case "P".charCodeAt(0):
@@ -357,7 +363,18 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         if ($scope.showDialog == null && $scope.state.currentTurnIndex !== -1) {
           // select trait
           $scope.state.selectTraitIndex = traitIndex;
-        }
+        } else return;
+        break;
+
+      case "E".charCodeAt(0):
+        var cardType = "Event";
+      case "I".charCodeAt(0):
+        if (cardType == null) cardType = "Item";
+      case "O".charCodeAt(0):
+        if (cardType == null) cardType = "Omen";
+        if ($scope.showDialog == null && $scope.state.currentTurnIndex !== -1) {
+          drawKeepCard($scope.state.explorers[$scope.state.currentTurnIndex], cardType);
+        } else return;
         break;
 
       default:

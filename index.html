@@ -114,7 +114,7 @@
     <!-- get card dialog -->
     <div id="getCardDialog" ng-show="showDialog == 'getCardDialog'">
       Get {{getCardDialog.type}} Card:<br>
-      <div><input type="button" value="Draw Top Card" ng-click="getCardDialog.drawTopCard()"></div>
+      <div><input type="button" id="drawTopCardButton" value="Draw Top Card" ng-click="getCardDialog.drawTopCard()"></div>
       <select ng-model="getCardDialog.specificCard" ng-options="card for card in getCardDialog.cards">
         <option value="">-- select card --</option>
       </select>

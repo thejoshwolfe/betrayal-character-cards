@@ -49,6 +49,9 @@ table {
     border: 3px solid black;
 }
 
+.Event {
+    background: #fff266;
+}
 .Item {
     background: #fc6;
 }
