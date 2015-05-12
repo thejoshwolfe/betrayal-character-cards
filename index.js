@@ -17,6 +17,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       bigBarValue: -1, // which means hidden
       showDiceRollBar: false,
     };
+    getElementById("outstandingActionItems").innerHTML = "";
   }
 
   // for iteration purposes
@@ -197,8 +198,11 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       var doItButtonName = "Do It";
       if (doItFunction === closeDialog) doItButtonName = "OK";
       if (doItFunction == null) {
-        doItFunction = closeDialog;
         doItButtonName = "Do It Yourself";
+        doItFunction = function() {
+          writeActionItem(getCardInfo(item).summary);
+          closeDialog();
+        };
       }
       $scope.doCardDialog = {
         name: name,
@@ -364,7 +368,18 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         };
       case "Creepy Puppet":              return null;
       case "Debris":                     return null;
-      case "Disquieting Sounds":         return null;
+      case "Disquieting Sounds":
+        return function() {
+          var result = rollDice(6);
+          var omenCount = getOmenCount();
+          var renderedOmenCount = formatOmenCount(omenCount);
+          writeToDoStuffLog("Roll 6d vs " + renderedOmenCount + ": " + result);
+          if (result >= omenCount) {
+            modifyHealthAndLog(explorer, SANITY, 1);
+          } else {
+            logDiceOfDamage(explorer, "Mental", 1);
+          }
+        };
       case "Drip ... Drip ... Drip ...": return null;
       case "Footsteps":                  return null;
       case "Funeral":                    return null;
@@ -422,11 +437,29 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Something Slimy":            return null;
       case "Spider":                     return null;
       case "The Beckoning":              return null;
-      case "The Lost One":               return null;
+      case "The Lost One":
+        return function() {
+          if (traitRollAndLog(explorer, KNOWL) >= 5) {
+            modifyHealthAndLog(explorer, KNOWL, 1);
+          } else {
+            var total = rollDice(3);
+            writeToDoStuffLog("Roll 3: " + total);
+            if (total >= 6) {
+              writeActionItem("Move to Entrance Hall");
+            } else if (total >= 4) {
+              writeActionItem("Move to Upper Landing");
+            } else if (total >= 2) {
+              writeActionItem("Move to a new Upper Floor room");
+            } else {
+              writeActionItem("Move to a new Basement room");
+            }
+          }
+        };
       case "The Voice":                  return null;
       case "The Walls":                  return null;
       case "Webs":                       return null;
-      case "What the...?":               return null;
+      case "What the...?":
+        return null;
       case "Whoops!":                    return null;
     }
     throw new Error();
@@ -467,10 +500,17 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     gainItem(explorer, {type:"Item", name:name});
     writeToDoStuffLog(formatExplorer(explorer) + " gains an Item: " + name);
   }
+  function getOmenCount() {
+    return 13 - getCardDeck("Omen").length;
+  }
+  function formatOmenCount(omenCount) {
+    return omenCount + " Omen" + (omenCount === 1 ? "" : "s");
+  }
   function doHauntRoll() {
-    var omenCount = 13 - getCardDeck("Omen").length;
+    var omenCount = getOmenCount();
+    var renderedOmenCount = formatOmenCount(omenCount);
     var result = rollDice(6);
-    writeToDoStuffLog("Haunt Roll (6d) with " + omenCount + " Omen" + (omenCount === 1 ? "" : "s") + ": " + result);
+    writeToDoStuffLog("Haunt Roll (6d) with " + renderedOmenCount + ": " + result);
     if (result >= omenCount) {
       logNothingHappens();
     } else {
@@ -561,9 +601,6 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         }
         break;
 
-      case "D".charCodeAt(0):
-        $scope.showDiceRoller(6);
-        break;
       // numbers above qwerty. numpad.
       case "1".charCodeAt(0): case 97:  $scope.showDiceRoller(1); break;
       case "2".charCodeAt(0): case 98:  $scope.showDiceRoller(2); break;
@@ -627,6 +664,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         if (cardType == null) cardType = "Omen";
         if ($scope.showDialog == null && $scope.state.currentTurnIndex !== -1) {
           drawKeepCard($scope.state.explorers[$scope.state.currentTurnIndex], cardType);
+        } else return;
+        break;
+
+      case "D".charCodeAt(0):
+        if ($scope.showDialog == null) {
+          $scope.showDiceRoller(6);
         } else return;
         break;
 
