@@ -334,11 +334,11 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Smelling Salts":
         return closeDialog;
 
-      case "A Moment of Hope":
-      case "Angry Being":
-      case "Burning Man":
-      case "Bloody Vision":
-      case "Closet Door":
+      case "A Moment of Hope":           return null;
+      case "Angry Being":                return null;
+      case "Burning Man":                return null;
+      case "Bloody Vision":              return null;
+      case "Closet Door":                return null;
       case "Creepy Crawlies":
         return function() {
           var result = traitRollAndLog(explorer, SANITY);
@@ -350,58 +350,66 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             modifyHealthAndLog(explorer, SANITY, -2);
           }
         };
-      case "Creepy Puppet":
-      case "Debris":
-      case "Disquieting Sounds":
-      case "Drip ... Drip ... Drip ...":
-      case "Footsteps":
-      case "Funeral":
-      case "Grave Dirt":
-      case "Groundskeeper":
-      case "Hanged Men":
-      case "Hideous Shriek":
-      case "Image in the Mirror (give)":
-      case "Image in the Mirror (take)":
-      case "It is Meant to Be":
-      case "Jonah's Turn":
-      case "Lights Out":
-      case "Locked Safe":
-      case "Mists from the Walls":
-      case "Mystic Slide":
+      case "Creepy Puppet":              return null;
+      case "Debris":                     return null;
+      case "Disquieting Sounds":         return null;
+      case "Drip ... Drip ... Drip ...": return null;
+      case "Footsteps":                  return null;
+      case "Funeral":                    return null;
+      case "Grave Dirt":                 return null;
+      case "Groundskeeper":              return null;
+      case "Hanged Men":                 return null;
+      case "Hideous Shriek":             return null;
+      case "Image in the Mirror (give)": return null;
+      case "Image in the Mirror (take)": return null;
+      case "It is Meant to Be":          return null;
+      case "Jonah's Turn":               return null;
+      case "Lights Out":                 return null;
+      case "Locked Safe":                return null;
+      case "Mists from the Walls":       return null;
+      case "Mystic Slide":               return null;
       case "Night View":
-      case "Phone Call":
-      case "Possession":
-      case "Revolving Wall":
-      case "Rotten":
-      case "Secret Passage":
-      case "Secret Stairs":
-      case "Shrieking Wind":
-      case "Silence":
-      case "Skeletons":
-      case "Smoke":
+        return function() {
+          if (traitRollAndLog(explorer, KNOWL) >= 5) {
+            modifyHealthAndLog(explorer, KNOWL, 1);
+          } else {
+            logNothingHappens();
+          }
+        };
+      case "Phone Call":                 return null;
+      case "Possession":                 return null;
+      case "Revolving Wall":             return null;
+      case "Rotten":                     return null;
+      case "Secret Passage":             return null;
+      case "Secret Stairs":              return null;
+      case "Shrieking Wind":             return null;
+      case "Silence":                    return null;
+      case "Skeletons":                  return null;
+      case "Smoke":                      return null;
       case "Something Hidden":
         return function() {
-          var result = traitRollAndLog(explorer, KNOWL);
-          if (result >= 4) {
+          if (traitRollAndLog(explorer, KNOWL) >= 4) {
             gainItemAndLog(explorer);
           } else {
             modifyHealthAndLog(explorer, SANITY, -1);
           }
         };
-      case "Something Slimy":
-      case "Spider":
-      case "The Beckoning":
-      case "The Lost One":
-      case "The Voice":
-      case "The Walls":
-      case "Webs":
-      case "What the...?":
-      case "Whoops!":
-        return null;
+      case "Something Slimy":            return null;
+      case "Spider":                     return null;
+      case "The Beckoning":              return null;
+      case "The Lost One":               return null;
+      case "The Voice":                  return null;
+      case "The Walls":                  return null;
+      case "Webs":                       return null;
+      case "What the...?":               return null;
+      case "Whoops!":                    return null;
     }
     throw new Error();
   }
 
+  function logNothingHappens() {
+    writeToDoStuffLog("Nothing happens.");
+  }
   function traitRollAndLog(explorer, t) {
     var total = 0;
     for (var i = 0; i < explorer.health[t]; i++) {
