@@ -307,7 +307,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Skull":
       case "Spear":
       case "Spirit Board":
-        return closeDialog;
+        return doHauntRoll;
       case "Bite": return null;
 
       case "Adrenaline Shot":
@@ -443,7 +443,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     var renderedPoints = total + " point" + (total === 1 ? "" : "s");
     var html = explorer.character + " takes " + diceCount + "d (" + renderedPoints + ") of " + mentalOrPhysical + " damage";
     if (total !== 0) {
-      html = '<span class="actionItem">' + html + '</span>';
+      html = formatActionItem(html);
     }
     writeToDoStuffLog(html);
   }
@@ -451,6 +451,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     var name = getCardDeck("Item").pop();
     gainItem(explorer, {type:"Item", name:name});
     writeToDoStuffLog(explorer.character + " gains an Item: " + name);
+  }
+  function doHauntRoll() {
+    var omenCount = 13 - getCardDeck("Omen").length;
+    var result = rollDice(6);
+    writeToDoStuffLog("Haunt Roll (6d) with " + omenCount + " Omen" + (omenCount === 1 ? "" : "s") + ": " + result);
+    if (result >= omenCount) {
+      logNothingHappens();
+    } else {
+      writeToDoStuffLog(formatActionItem("The Haunt is revealed!"));
+    }
+  }
+  function formatActionItem(html) {
+    return '<span class="actionItem">' + html + '</span>';
   }
 
   $scope.eventDeckDisplay = function() {
