@@ -222,6 +222,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         },
       };
       getElementById("doStuffLog").innerHTML = "";
+      getElementById("outstandingActionItems").innerHTML = "";
       showThisDialog("doCardDialog");
       setTimeout(function() {
         getElementById("doItButton").focus();
@@ -369,7 +370,20 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Funeral":                    return null;
       case "Grave Dirt":                 return null;
       case "Groundskeeper":              return null;
-      case "Hanged Men":                 return null;
+      case "Hanged Men":
+        return function() {
+          var allPass = true;
+          for (var t = 0; t < traitList.length; t++) {
+            var result = traitRollAndLog(explorer, t);
+            if (result < 2) {
+              modifyHealthAndLog(explorer, t, -1);
+              allPass = false;
+            }
+          }
+          if (allPass) {
+            writeActionItem("Gain 1 in a trait of your choice");
+          }
+        };
       case "Hideous Shriek":             return null;
       case "Image in the Mirror (give)": return null;
       case "Image in the Mirror (take)": return null;
@@ -436,21 +450,22 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   function modifyHealthAndLog(explorer, t, delta) {
     $scope.modifyHealth(explorer, t, delta);
     var gainsLoses = delta < 0 ? "loses" : "gains";
-    writeToDoStuffLog(explorer.character + " " + gainsLoses + " " + Math.abs(delta) + " " + traitList[t]);
+    writeToDoStuffLog(formatExplorer(explorer) + " " + gainsLoses + " " + Math.abs(delta) + " " + traitList[t]);
   }
   function logDiceOfDamage(explorer, mentalOrPhysical, diceCount) {
     var total = rollDice(diceCount);
     var renderedPoints = total + " point" + (total === 1 ? "" : "s");
-    var html = explorer.character + " takes " + diceCount + "d (" + renderedPoints + ") of " + mentalOrPhysical + " damage";
+    var html = formatExplorer(explorer) + " takes " + renderedPoints + " of " + mentalOrPhysical + " damage";
     if (total !== 0) {
-      html = formatActionItem(html);
+      writeActionItem(html);
+    } else {
+      writeToDoStuffLog(html);
     }
-    writeToDoStuffLog(html);
   }
   function gainItemAndLog(explorer) {
     var name = getCardDeck("Item").pop();
     gainItem(explorer, {type:"Item", name:name});
-    writeToDoStuffLog(explorer.character + " gains an Item: " + name);
+    writeToDoStuffLog(formatExplorer(explorer) + " gains an Item: " + name);
   }
   function doHauntRoll() {
     var omenCount = 13 - getCardDeck("Omen").length;
@@ -459,11 +474,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     if (result >= omenCount) {
       logNothingHappens();
     } else {
-      writeToDoStuffLog(formatActionItem("The Haunt is revealed!"));
+      writeActionItem("The Haunt is revealed!");
     }
   }
-  function formatActionItem(html) {
-    return '<span class="actionItem">' + html + '</span>';
+  function writeActionItem(html) {
+    html = '<span class="actionItem">' + html + '</span>';
+    writeToDoStuffLog(html);
+    var node = document.createElement("li");
+    node.innerHTML = html;
+    getElementById("outstandingActionItems").appendChild(node);
+  }
+  function formatExplorer(explorer) {
+    var color = window.Betrayal.characters[explorer.character].colorClass;
+    return '<span class="' + color + '">' + explorer.character + '</span>';
   }
 
   $scope.eventDeckDisplay = function() {
@@ -512,6 +535,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     var modalDialogDiv = getElementById(dialogId);
     modalDialogDiv.style.top = Math.floor(document.body.offsetHeight / 10) + "px";
     modalDialogDiv.style.left = Math.floor(document.body.offsetWidth / 10) + "px";
+
+    // also, this selection shouldn't persist through any dialog opening.
+    $scope.state.selectTraitIndex = -1;
   }
   document.addEventListener("keydown", documentKeyListener);
   function documentKeyListener(event) {
@@ -525,7 +551,6 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         if ($scope.showDialog != null) return;
         if ($scope.state.selectTraitIndex !== -1) {
           $scope.showDiceRollerForTrait($scope.state.explorers[$scope.state.currentTurnIndex], $scope.state.selectTraitIndex);
-          $scope.state.selectTraitIndex = -1;
           break;
         }
         var playerCount = $scope.state.explorers.length - 1;
