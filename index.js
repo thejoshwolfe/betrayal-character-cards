@@ -183,7 +183,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
 
     function gainSpecificCard(name) {
       var item = { name: name, type: type };
-      if (getCardInfo(item).keep !== false) {
+      if (shouldKeepCard(item)) {
         gainItem(explorer, item);
       }
       closeDialog();
@@ -198,6 +198,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       }
       $scope.doCardDialog = {
         name: name,
+        summary: getCardInfo(item).summary,
         doItName: doItButtonName,
         doIt: doItFunction,
         discard: function() {
@@ -205,7 +206,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           closeDialog();
         },
         keep: function() {
-          if (getCardInfo(item).keep === false) {
+          if (!shouldKeepCard(item)) {
             gainItem(explorer, item);
             saveState();
           }
@@ -264,6 +265,18 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Omen": return $scope.state.omenDeck;
     }
     throw new Error();
+  }
+  function shouldKeepCard(card) {
+    if (card.type !== "Event") return true;
+    switch (card.name) {
+      case "Debris":
+      case "Grave Dirt":
+      case "It is Meant to Be":
+      case "Lights Out":
+      case "Webs":
+        return true;
+    }
+    return false;
   }
   function getDoCardFunction(card) {
     switch (card.name) {
