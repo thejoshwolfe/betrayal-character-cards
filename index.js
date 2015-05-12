@@ -399,7 +399,22 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             writeActionItem("Gain 1 in a trait of your choice");
           }
         };
-      case "Hideous Shriek":             return null;
+      case "Hideous Shriek":
+        return function() {
+          var playerCount = $scope.state.explorers.length - 1;
+          for (var i = 0; i < playerCount; i++) {
+            var explorer = $scope.state.explorers[i];
+            writeToDoStuffLog(formatExplorer(explorer) + ":");
+            var result = traitRollAndLog(explorer, SANITY);
+            if (result >= 4) {
+              logNothingHappens();
+            } else if (result >= 1) {
+              logDiceOfDamage(explorer, "Mental", 1);
+            } else {
+              logDiceOfDamage(explorer, "Mental", 2);
+            }
+          }
+        }
       case "Image in the Mirror (give)": return null;
       case "Image in the Mirror (take)": return null;
       case "It is Meant to Be":          return null;
