@@ -341,7 +341,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Closet Door":
       case "Creepy Crawlies":
         return function() {
-          var result = traitRoll(explorer, SANITY);
+          var result = traitRollAndLog(explorer, SANITY);
           if (result >= 5) {
             modifyHealthAndLog(explorer, SANITY, 1);
           } else if (result >= 1) {
@@ -380,6 +380,14 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Skeletons":
       case "Smoke":
       case "Something Hidden":
+        return function() {
+          var result = traitRollAndLog(explorer, KNOWL);
+          if (result >= 4) {
+            gainItemAndLog(explorer);
+          } else {
+            modifyHealthAndLog(explorer, SANITY, -1);
+          }
+        };
       case "Something Slimy":
       case "Spider":
       case "The Beckoning":
@@ -394,7 +402,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     throw new Error();
   }
 
-  function traitRoll(explorer, t) {
+  function traitRollAndLog(explorer, t) {
     var total = 0;
     for (var i = 0; i < explorer.health[t]; i++) {
       total += Math.floor(Math.random() * 3);
@@ -407,6 +415,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     var gainsLoses = delta < 0 ? "loses" : "gains";
     writeToDoStuffLog(explorer.character + " " + gainsLoses + " " + Math.abs(delta) + " " + traitList[t]);
   }
+  function gainItemAndLog(explorer) {
+    var name = getCardDeck("Item").pop();
+    gainItem(explorer, {type:"Item", name:name});
+    writeToDoStuffLog(explorer.character + " gains an Item: " + name);
+  }
+
   $scope.eventDeckDisplay = function() {
     return $scope.state.eventDeck.length + "/" + Object.keys(window.Betrayal.events).length;
   };
