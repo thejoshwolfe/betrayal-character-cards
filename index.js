@@ -29,6 +29,10 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   // same order as traits
   $scope.upgradeRooms = ["Gymnasium", "Larder", "Chapel", "Library"];
   var traitList = ["Speed", "Might", "Sanity", "Knowl"];
+  var SPEED = 0;
+  var MIGHT = 1;
+  var SANITY = 2;
+  var KNOWL = 3;
 
   $scope.explorerClass = function(explorer) {
     return explorer === $scope.state.explorers[$scope.state.currentTurnIndex] ? "currentTurn" : "";
@@ -200,7 +204,11 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         name: name,
         summary: getCardInfo(item).summary,
         doItName: doItButtonName,
-        doIt: doItFunction,
+        doIt: function() {
+          doItFunction();
+          $scope.doCardDialog.doItName = "OK";
+          $scope.doCardDialog.doIt = closeDialog;
+        },
         discard: function() {
           $scope.discard(explorer, item);
           closeDialog();
@@ -213,11 +221,17 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           closeDialog();
         },
       };
+      getElementById("doStuffLog").innerHTML = "";
       showThisDialog("doCardDialog");
       setTimeout(function() {
         getElementById("doItButton").focus();
       }, 0);
     }
+  }
+  function writeToDoStuffLog(html) {
+    var node = document.createElement("li");
+    node.innerHTML = html;
+    getElementById("doStuffLog").appendChild(node);
   }
   $scope.discard = function(explorer, item) {
     loseItem(explorer, item);
@@ -279,6 +293,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     return false;
   }
   function getDoCardFunction(card) {
+    var explorer = $scope.state.explorers[$scope.state.currentTurnIndex];
     switch (card.name) {
       case "Book":
       case "Crystal Ball":
@@ -325,6 +340,16 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Bloody Vision":
       case "Closet Door":
       case "Creepy Crawlies":
+        return function() {
+          var result = traitRoll(explorer, SANITY);
+          if (result >= 5) {
+            modifyHealthAndLog(explorer, SANITY, 1);
+          } else if (result >= 1) {
+            modifyHealthAndLog(explorer, SANITY, -1);
+          } else {
+            modifyHealthAndLog(explorer, SANITY, -2);
+          }
+        };
       case "Creepy Puppet":
       case "Debris":
       case "Disquieting Sounds":
@@ -369,6 +394,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     throw new Error();
   }
 
+  function traitRoll(explorer, t) {
+    var total = 0;
+    for (var i = 0; i < explorer.health[t]; i++) {
+      total += Math.floor(Math.random() * 3);
+    }
+    writeToDoStuffLog(traitList[t] + " Roll (" + explorer.health[t] + "d): " + total);
+    return total;
+  }
+  function modifyHealthAndLog(explorer, t, delta) {
+    $scope.modifyHealth(explorer, t, delta);
+    var gainsLoses = delta < 0 ? "loses" : "gains";
+    writeToDoStuffLog(explorer.character + " " + gainsLoses + " " + Math.abs(delta) + " " + traitList[t]);
+  }
   $scope.eventDeckDisplay = function() {
     return $scope.state.eventDeck.length + "/" + Object.keys(window.Betrayal.events).length;
   };
