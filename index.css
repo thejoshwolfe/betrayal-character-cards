@@ -73,6 +73,11 @@ table {
 .white   { background: #000; color: #fff; text-shadow: 2px 2px 2px black; }
 .monster { background: #800; color: #fff; text-shadow: 2px 2px 2px black; }
 
+.actionItem {
+    background: #f88;
+    font-weight: bold;
+}
+
 #modalMask {
     position: fixed;
     display: block;

@@ -335,7 +335,18 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         return closeDialog;
 
       case "A Moment of Hope":           return null;
-      case "Angry Being":                return null;
+      case "Angry Being":
+        return function() {
+          var result = traitRollAndLog(explorer, SPEED);
+          if (result >= 5) {
+            modifyHealthAndLog(explorer, SPEED, 1);
+          } else if (result >= 2) {
+            logDiceOfDamage(explorer, "Physical", 1);
+          } else {
+            logDiceOfDamage(explorer, "Physical", 1);
+            logDiceOfDamage(explorer, "Mental", 1);
+          }
+        };
       case "Burning Man":                return null;
       case "Bloody Vision":              return null;
       case "Closet Door":                return null;
@@ -410,11 +421,15 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   function logNothingHappens() {
     writeToDoStuffLog("Nothing happens.");
   }
-  function traitRollAndLog(explorer, t) {
+  function rollDice(diceCount) {
     var total = 0;
-    for (var i = 0; i < explorer.health[t]; i++) {
+    for (var i = 0; i < diceCount; i++) {
       total += Math.floor(Math.random() * 3);
     }
+    return total;
+  }
+  function traitRollAndLog(explorer, t) {
+    var total = rollDice(explorer.health[t]);
     writeToDoStuffLog(traitList[t] + " Roll (" + explorer.health[t] + "d): " + total);
     return total;
   }
@@ -422,6 +437,15 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     $scope.modifyHealth(explorer, t, delta);
     var gainsLoses = delta < 0 ? "loses" : "gains";
     writeToDoStuffLog(explorer.character + " " + gainsLoses + " " + Math.abs(delta) + " " + traitList[t]);
+  }
+  function logDiceOfDamage(explorer, mentalOrPhysical, diceCount) {
+    var total = rollDice(diceCount);
+    var renderedPoints = total + " point" + (total === 1 ? "" : "s");
+    var html = explorer.character + " takes " + diceCount + "d (" + renderedPoints + ") of " + mentalOrPhysical + " damage";
+    if (total !== 0) {
+      html = '<span class="actionItem">' + html + '</span>';
+    }
+    writeToDoStuffLog(html);
   }
   function gainItemAndLog(explorer) {
     var name = getCardDeck("Item").pop();
