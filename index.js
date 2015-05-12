@@ -212,6 +212,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           doItFunction();
           $scope.doCardDialog.doItName = "OK";
           $scope.doCardDialog.doIt = closeDialog;
+          saveState();
         },
         discard: function() {
           $scope.discard(explorer, item);
@@ -414,9 +415,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
               logDiceOfDamage(explorer, "Mental", 2);
             }
           }
-        }
+        };
       case "Image in the Mirror (give)": return null;
-      case "Image in the Mirror (take)": return null;
+      case "Image in the Mirror (take)":
+        return function() {
+          gainItemAndLog(explorer);
+        };
       case "It is Meant to Be":          return null;
       case "Jonah's Turn":               return null;
       case "Lights Out":                 return null;
@@ -475,7 +479,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Webs":                       return null;
       case "What the...?":
         return null;
-      case "Whoops!":                    return null;
+      case "Whoops!":
+        return function() {
+          var items = explorer.inventory.filter(function(card) {
+            return card.type === "Item";
+          });
+          if (items.length === 0) {
+            logNothingHappens();
+          } else {
+            var item = items[Math.floor(Math.random() * items.length)];
+            loseItem(explorer, item);
+            writeToDoStuffLog(formatExplorer(explorer) + " loses a random Item: " + item.name);
+          }
+        };
     }
     throw new Error();
   }
