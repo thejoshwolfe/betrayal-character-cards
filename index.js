@@ -416,7 +416,28 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             }
           }
         };
-      case "Image in the Mirror (give)": return null;
+      case "Image in the Mirror (give)":
+        return function() {
+          var playerCount = $scope.state.explorers.length - 1;
+          var didAnything = false;
+          for (var i = 0; i < playerCount; i++) {
+            var explorer = $scope.state.explorers[($scope.state.currentTurnIndex + i) % playerCount];
+            var items = getItemsInInventory(explorer);
+            if (items.length === 0) continue;
+            if (items.length === 1) {
+              loseItem(explorer, items[0]);
+              writeToDoStuffLog(formatExplorer(explorer) + " puts an Item back: " + item.name);
+              var deck = $scope.state.itemDeck;
+              deck.push(items[0]);
+              writeToDoStuffLog("Shuffle the Item deck");
+              $scope.state.itemDeck = shuffled(deck);
+            }
+            didAnything = true;
+          }
+          if (!didAnything) {
+            logNothingHappens();
+          }
+        };
       case "Image in the Mirror (take)":
         return function() {
           gainItemAndLog(explorer);
@@ -481,9 +502,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         return null;
       case "Whoops!":
         return function() {
-          var items = explorer.inventory.filter(function(card) {
-            return card.type === "Item";
-          });
+          var items = getItemsInInventory(explorer);
           if (items.length === 0) {
             logNothingHappens();
           } else {
@@ -558,6 +577,11 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   function formatExplorer(explorer) {
     var color = window.Betrayal.characters[explorer.character].colorClass;
     return '<span class="' + color + '">' + explorer.character + '</span>';
+  }
+  function getItemsInInventory(explorer) {
+    return explorer.inventory.filter(function(card) {
+      return card.type === "Item";
+    });
   }
 
   $scope.eventDeckDisplay = function() {
