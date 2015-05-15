@@ -437,14 +437,13 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             var explorer = $scope.state.explorers[($scope.state.currentTurnIndex + i) % playerCount];
             var items = getItemsInInventory(explorer);
             if (items.length === 0) continue;
-            if (items.length === 1) {
-              loseItem(explorer, items[0]);
-              writeToDoStuffLog(formatExplorer(explorer) + " puts an Item back: " + item.name);
-              var deck = $scope.state.itemDeck;
-              deck.push(items[0]);
-              writeToDoStuffLog("Shuffle the Item deck");
-              $scope.state.itemDeck = shuffled(deck);
-            }
+            var item = items[Math.floor(Math.random() * items.length)];
+            loseItem(explorer, item);
+            writeToDoStuffLog(formatExplorer(explorer) + " puts an Item back: " + item.name);
+            var deck = $scope.state.itemDeck;
+            deck.push(item);
+            writeToDoStuffLog("Shuffle the Item deck");
+            $scope.state.itemDeck = shuffled(deck);
             didAnything = true;
           }
           if (!didAnything) {
@@ -524,7 +523,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           }
         };
       case "The Voice":                  return null;
-      case "The Walls":                  return null;
+      case "The Walls":
+        return null;
       case "Webs":                       return null;
       case "What the...?":
         return null;
