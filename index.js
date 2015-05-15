@@ -475,7 +475,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           }
         };
       case "Something Slimy":            return null;
-      case "Spider":                     return null;
+      case "Spider":
+        return function() {
+          // whichever is better, and prefer sanity.
+          var trait = getTraitValue(explorer, SANITY) < getTraitValue(explorer, SPEED) ? SPEED : SANITY;
+          var result = traitRollAndLog(explorer, trait);
+          if (result >= 4) {
+            modifyHealthAndLog(explorer, trait, 1);
+          } else if (result >= 1) {
+            logDiceOfDamage(explorer, "Physical", 1);
+          } else {
+            logDiceOfDamage(explorer, "Physical", 2);
+          }
+        };
       case "The Beckoning":              return null;
       case "The Lost One":
         return function() {
@@ -526,8 +538,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     return total;
   }
   function traitRollAndLog(explorer, t) {
-    var total = rollDice(explorer.health[t]);
-    writeToDoStuffLog(traitList[t] + " Roll (" + explorer.health[t] + "d): " + total);
+    var traitValue = getTraitValue(explorer, t);
+    var total = rollDice(traitValue);
+    writeToDoStuffLog(traitList[t] + " Roll (" + traitValue + "d): " + total);
     return total;
   }
   function modifyHealthAndLog(explorer, t, delta) {
@@ -746,8 +759,11 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   $scope.dice = [];
   $scope.diceTotal = "";
   $scope.reroll = [];
+  function getTraitValue(explorer, t) {
+    return $scope.traitTable(explorer)[t].values[clampHealth(explorer.health[t])];
+  }
   $scope.showDiceRollerForTrait = function(explorer, t) {
-    var traitValue = $scope.traitTable(explorer)[t].values[clampHealth(explorer.health[t])];
+    var traitValue = getTraitValue(explorer, t);
     $scope.showDiceRoller(traitValue);
   };
   $scope.showDiceRoller = function(traitValue) {
