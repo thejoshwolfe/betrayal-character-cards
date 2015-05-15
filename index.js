@@ -316,7 +316,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         return doHauntRoll;
       case "Bite":
         return function() {
-          doAnonymousMightAttack(explorer, 4);
+          doAnonymousMight4Attack(explorer);
           doHauntRoll();
         };
 
@@ -391,7 +391,14 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Footsteps":                  return null;
       case "Funeral":                    return null;
       case "Grave Dirt":                 return null;
-      case "Groundskeeper":              return null;
+      case "Groundskeeper":
+        return function() {
+          if (traitRollAndLog(explorer, KNOWL) >= 4) {
+            gainItemAndLog(explorer);
+          } else {
+            doAnonymousMight4Attack(explorer);
+          }
+        };
       case "Hanged Men":
         return function() {
           var allPass = true;
@@ -592,7 +599,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       writeActionItem("The Haunt is revealed!");
     }
   }
-  function doAnonymousMightAttack(explorer, attackDice) {
+  function doAnonymousMight4Attack(explorer) {
+    var attackDice = 4;
     var attackPower = rollDice(attackDice);
     writeToDoStuffLog("Might " + attackDice + " attack: " + attackPower);
     var defenseDice = getTraitValue(explorer, MIGHT);
