@@ -441,10 +441,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             loseItem(explorer, item);
             writeToDoStuffLog(formatExplorer(explorer) + " puts an Item back: " + item.name);
             var deck = $scope.state.itemDeck;
-            deck.push(item);
+            deck.push(item.name);
             writeToDoStuffLog("Shuffle the Item deck");
             $scope.state.itemDeck = shuffled(deck);
             didAnything = true;
+            modifyHealthAndLog(explorer, KNOWL, 1);
+            break;
           }
           if (!didAnything) {
             logNothingHappens();
