@@ -314,7 +314,11 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Spear":
       case "Spirit Board":
         return doHauntRoll;
-      case "Bite": return null;
+      case "Bite":
+        return function() {
+          doAnonymousMightAttack(explorer, 4);
+          doHauntRoll();
+        };
 
       case "Adrenaline Shot":
       case "Amulet of the Ages":
@@ -340,7 +344,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Smelling Salts":
         return closeDialog;
 
-      case "A Moment of Hope":           return null;
+      case "A Moment of Hope":
+        return closeDialog;
       case "Angry Being":
         return function() {
           var result = traitRollAndLog(explorer, SPEED);
@@ -381,7 +386,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             logDiceOfDamage(explorer, "Mental", 1);
           }
         };
-      case "Drip ... Drip ... Drip ...": return null;
+      case "Drip ... Drip ... Drip ...":
+        return closeDialog;
       case "Footsteps":                  return null;
       case "Funeral":                    return null;
       case "Grave Dirt":                 return null;
@@ -444,7 +450,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         };
       case "It is Meant to Be":          return null;
       case "Jonah's Turn":               return null;
-      case "Lights Out":                 return null;
+      case "Lights Out":
+        return closeDialog;
       case "Locked Safe":                return null;
       case "Mists from the Walls":       return null;
       case "Mystic Slide":               return null;
@@ -458,14 +465,16 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         };
       case "Phone Call":                 return null;
       case "Possession":                 return null;
-      case "Revolving Wall":             return null;
+      case "Revolving Wall":
+        return closeDialog;
       case "Rotten":                     return null;
       case "Secret Passage":             return null;
       case "Secret Stairs":              return null;
       case "Shrieking Wind":             return null;
       case "Silence":                    return null;
       case "Skeletons":                  return null;
-      case "Smoke":                      return null;
+      case "Smoke":
+        return closeDialog;
       case "Something Hidden":
         return function() {
           if (traitRollAndLog(explorer, KNOWL) >= 4) {
@@ -550,9 +559,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   }
   function logDiceOfDamage(explorer, mentalOrPhysical, diceCount) {
     var total = rollDice(diceCount);
-    var renderedPoints = total + " point" + (total === 1 ? "" : "s");
+    logDamage(explorer, mentalOrPhysical, total);
+  }
+  function logDamage(explorer, mentalOrPhysical, damage) {
+    var renderedPoints = damage + " point" + (damage === 1 ? "" : "s");
     var html = formatExplorer(explorer) + " takes " + renderedPoints + " of " + mentalOrPhysical + " damage";
-    if (total !== 0) {
+    if (damage !== 0) {
       writeActionItem(html);
     } else {
       writeToDoStuffLog(html);
@@ -578,6 +590,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       logNothingHappens();
     } else {
       writeActionItem("The Haunt is revealed!");
+    }
+  }
+  function doAnonymousMightAttack(explorer, attackDice) {
+    var attackPower = rollDice(attackDice);
+    writeToDoStuffLog("Might " + attackDice + " attack: " + attackPower);
+    var defenseDice = getTraitValue(explorer, MIGHT);
+    var defensePower = rollDice(defenseDice);
+    writeToDoStuffLog("Might " + defenseDice + " defense: " + defensePower);
+    var damage = attackPower - defensePower;
+    if (damage > 0) {
+      logDamage(explorer, "Physical", damage);
+    } else {
+      logNothingHappens();
     }
   }
   function writeActionItem(html) {
