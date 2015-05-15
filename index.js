@@ -471,7 +471,20 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             logNothingHappens();
           }
         };
-      case "Phone Call":                 return null;
+      case "Phone Call":
+        return function() {
+          var result = rollDice(2);
+          writeToDoStuffLog("Roll 2d: " + result);
+          if (result >= 4) {
+            modifyHealthAndLog(explorer, SANITY, 1);
+          } else if (result >= 3) {
+            modifyHealthAndLog(explorer, KNOWL, 1);
+          } else if (result >= 1) {
+            logDiceOfDamage(explorer, "Mental", 1);
+          } else {
+            logDiceOfDamage(explorer, "Physical", 2);
+          }
+        };
       case "Possession":                 return null;
       case "Revolving Wall":
         return closeDialog;
