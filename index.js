@@ -381,7 +381,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             writeActionItem(formatExplorer(explorer) + " attacks something in the same room (with the lowest Might)");
           }
         };
-      case "Closet Door":                return null;
+      case "Closet Door":
+        return closeDialog;
       case "Creepy Crawlies":
         return function() {
           var result = traitRollAndLog(explorer, SANITY);
@@ -393,7 +394,20 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             modifyHealthAndLog(explorer, SANITY, -2);
           }
         };
-      case "Creepy Puppet":              return null;
+      case "Creepy Puppet":
+        return function() {
+          if (doAnonymousMight4Attack(explorer) > 0) {
+            // might bonus to spear holder
+            var playerCount = $scope.state.explorers.length - 1;
+            for (var i = 0; i < playerCount; i++) {
+              var otherExplorer = $scope.state.explorers[i];
+              if (explorer === otherExplorer) continue;
+              var spears = otherExplorer.inventory.filter(function(item) { return item.name === "Spear"; });
+              if (spears.length === 0) continue;
+              modifyHealthAndLog(otherExplorer, MIGHT, 2);
+            }
+          }
+        };
       case "Debris":                     return null;
       case "Disquieting Sounds":
         return function() {
@@ -495,8 +509,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           var playerCount = $scope.state.explorers.length - 1;
           for (var i = 0; i < playerCount; i++) {
             var otherExplorer = $scope.state.explorers[($scope.state.currentTurnIndex + i) % playerCount];
-            var items = getItemsInInventory(otherExplorer);
-            var puzzleBoxes = items.filter(function(item) { return item.name === "Puzzle Box"; });
+            var puzzleBoxes = otherExplorer.inventory.filter(function(item) { return item.name === "Puzzle Box"; });
             if (puzzleBoxes.length === 0) continue;
             loseItem(otherExplorer, puzzleBoxes[0]);
             writeToDoStuffLog(formatExplorer(otherExplorer) + " loses the Puzzle Box");
@@ -696,6 +709,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     } else {
       logNothingHappens();
     }
+    return damage;
   }
   function writeActionItem(html) {
     html = '<span class="actionItem">' + html + '</span>';
