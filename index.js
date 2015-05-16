@@ -465,7 +465,15 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             writeActionItem(formatExplorer(explorer) + " moves to the Crypt or Graveyard if possible");
           }
         };
-      case "Grave Dirt":                 return null;
+      case "Grave Dirt":
+        return function(item) {
+          if (traitRollAndLog(explorer, MIGHT) >= 4) {
+            modifyHealthAndLog(explorer, MIGHT, 1);
+            $scope.discard(explorer, item);
+          } else {
+            writeActionItem(formatExplorer(explorer) + " is covered in grave dirt");
+          }
+        };
       case "Groundskeeper":
         return function() {
           if (traitRollAndLog(explorer, KNOWL) >= 4) {
