@@ -644,9 +644,15 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         };
       case "Secret Stairs":
         return null;
-      case "Shrieking Wind":             return null;
-      case "Silence":                    return null;
-      case "Skeletons":                  return null;
+      case "Shrieking Wind":
+        return null;
+      case "Silence":
+        return null;
+      case "Skeletons":
+        return function() {
+          logDiceOfDamage(explorer, "Mental", 1);
+          writeActionItem("place Skeletons here");
+        };
       case "Smoke":
         return closeDialog;
       case "Something Hidden":
@@ -681,7 +687,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             logDiceOfDamage(explorer, "Physical", 2);
           }
         };
-      case "The Beckoning":              return null;
+      case "The Beckoning":
+        return null;
       case "The Lost One":
         return function() {
           if (traitRollAndLog(explorer, KNOWL) >= 5) {
@@ -700,7 +707,14 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             }
           }
         };
-      case "The Voice":                  return null;
+      case "The Voice":
+        return function() {
+          if (traitRollAndLog(explorer, KNOWL) >= 4) {
+            gainItemAndLog(explorer);
+          } else {
+            logNothingHappens();
+          }
+        };
       case "The Walls":
         return null;
       case "Webs":
