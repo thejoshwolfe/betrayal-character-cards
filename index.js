@@ -610,7 +610,23 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         };
       case "Revolving Wall":
         return closeDialog;
-      case "Rotten":                     return null;
+      case "Rotten":
+        return function() {
+          var result = traitRollAndLog(explorer, SANITY);
+          if (result >= 5) {
+            modifyHealthAndLog(explorer, SANITY, 1);
+          } else if (result >= 2) {
+            modifyHealthAndLog(explorer, MIGHT, -1);
+          } else if (result >= 1) {
+            modifyHealthAndLog(explorer, MIGHT, -1);
+            modifyHealthAndLog(explorer, SPEED, -1);
+          } else {
+            modifyHealthAndLog(explorer, MIGHT, -1);
+            modifyHealthAndLog(explorer, SPEED, -1);
+            modifyHealthAndLog(explorer, SANITY, -1);
+            modifyHealthAndLog(explorer, KNOWL, -1);
+          }
+        };
       case "Secret Passage":             return null;
       case "Secret Stairs":
         return null;
