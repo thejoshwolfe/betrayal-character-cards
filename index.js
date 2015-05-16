@@ -431,8 +431,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         };
       case "Image in the Mirror (give)":
         return function() {
-          var playerCount = $scope.state.explorers.length - 1;
           var didAnything = false;
+          var playerCount = $scope.state.explorers.length - 1;
           for (var i = 0; i < playerCount; i++) {
             var explorer = $scope.state.explorers[($scope.state.currentTurnIndex + i) % playerCount];
             var items = getItemsInInventory(explorer);
@@ -457,7 +457,22 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
           gainItemAndLog(explorer);
         };
       case "It is Meant to Be":          return null;
-      case "Jonah's Turn":               return null;
+      case "Jonah's Turn":
+        return function() {
+          var playerCount = $scope.state.explorers.length - 1;
+          for (var i = 0; i < playerCount; i++) {
+            var otherExplorer = $scope.state.explorers[($scope.state.currentTurnIndex + i) % playerCount];
+            var items = getItemsInInventory(otherExplorer);
+            var puzzleBoxes = items.filter(function(item) { return item.name === "Puzzle Box"; });
+            if (puzzleBoxes.length === 0) continue;
+            loseItem(otherExplorer, puzzleBoxes[0]);
+            writeToDoStuffLog(formatExplorer(otherExplorer) + " loses the Puzzle Box");
+            gainItemAndLog(otherExplorer);
+            modifyHealthAndLog(explorer, SANITY, 1);
+            return;
+          }
+          logDiceOfDamage(explorer, "Mental", 1);
+        };
       case "Lights Out":
         return closeDialog;
       case "Locked Safe":                return null;
