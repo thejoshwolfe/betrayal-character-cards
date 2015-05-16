@@ -439,7 +439,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         };
       case "Drip ... Drip ... Drip ...":
         return closeDialog;
-      case "Footsteps":                  return null;
+      case "Footsteps":
+        return function() {
+          // assume never in the Chapel
+          var result = rollDice(1);
+          writeToDoStuffLog("Roll 1d: " + result);
+          if (result >= 2) {
+            modifyHealthAndLog(explorer, SANITY, -1);
+          } else if (result >= 1) {
+            modifyHealthAndLog(explorer, SPEED, -1);
+          } else {
+            writeActionItem("Everyone loses 1 in a trait of their choice");
+          }
+        };
       case "Funeral":
         return function() {
           var result = traitRollAndLog(explorer, SANITY);
