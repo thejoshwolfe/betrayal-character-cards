@@ -519,7 +519,18 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             modifyHealthAndLog(explorer, SANITY, -1);
           }
         };
-      case "Something Slimy":            return null;
+      case "Something Slimy":
+        return function() {
+          var result = traitRollAndLog(explorer, SPEED);
+          if (result >= 4) {
+            modifyHealthAndLog(explorer, SPEED, 1);
+          } else if (result >= 1) {
+            modifyHealthAndLog(explorer, MIGHT, -1);
+          } else {
+            modifyHealthAndLog(explorer, MIGHT, -1);
+            modifyHealthAndLog(explorer, SPEED, -1);
+          }
+        };
       case "Spider":
         return function() {
           // whichever is better, and prefer sanity.
