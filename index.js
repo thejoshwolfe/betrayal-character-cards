@@ -408,7 +408,23 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             }
           }
         };
-      case "Debris":                     return null;
+      case "Debris":
+        return function(item) {
+          var result = traitRollAndLog(explorer, SPEED);
+          var keepIt = true;
+          if (result >= 3) {
+            modifyHealthAndLog(explorer, SPEED, 1);
+            $scope.discard(explorer, item);
+            keepIt = false;
+          } else if (result >= 1) {
+            logDiceOfDamage(explorer, "Physical", 1);
+          } else {
+            logDiceOfDamage(explorer, "Physical", 2);
+          }
+          if (keepIt) {
+            writeActionItem(formatExplorer(explorer) + " is trapped under the debris");
+          }
+        };
       case "Disquieting Sounds":
         return function() {
           var result = rollDice(6);
