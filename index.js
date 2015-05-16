@@ -389,7 +389,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Drip ... Drip ... Drip ...":
         return closeDialog;
       case "Footsteps":                  return null;
-      case "Funeral":                    return null;
+      case "Funeral":
+        return function() {
+          var result = traitRollAndLog(explorer, SANITY);
+          if (result >= 4) {
+            modifyHealthAndLog(explorer, SANITY, 1);
+          } else if (result >= 2) {
+            modifyHealthAndLog(explorer, SANITY, -1);
+          } else {
+            modifyHealthAndLog(explorer, SANITY, -1);
+            modifyHealthAndLog(explorer, MIGHT, -1);
+            writeActionItem(formatExplorer(explorer) + " moves to the Crypt or Graveyard if possible");
+          }
+        };
       case "Grave Dirt":                 return null;
       case "Groundskeeper":
         return function() {
