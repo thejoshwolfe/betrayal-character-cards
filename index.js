@@ -539,7 +539,12 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         return function() {
           gainItemAndLog(explorer);
         };
-      case "It is Meant to Be":          return null;
+      case "It is Meant to Be":
+        return function() {
+          var result = rollDice(4);
+          writeToDoStuffLog("Roll 4d: " + result);
+          // TODO: keep track of that?
+        };
       case "Jonah's Turn":
         return function() {
           var playerCount = $scope.state.explorers.length - 1;
@@ -557,10 +562,19 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         };
       case "Lights Out":
         return closeDialog;
-      case "Locked Safe":                return null;
+      case "Locked Safe":
+        return closeDialog;
       case "Mists from the Walls":
         return null;
-      case "Mystic Slide":               return null;
+      case "Mystic Slide":
+        return function() {
+          if (traitRollAndLog(explorer, MIGHT) >= 5) {
+            writeActionItem(formatExplorer(explorer) + " moves to any room below");
+          } else {
+            writeActionItem(formatExplorer(explorer) + " moves to new basement room");
+            logDiceOfDamage(explorer, "Physical", 1);
+          }
+        };
       case "Night View":
         return function() {
           if (traitRollAndLog(explorer, KNOWL) >= 5) {
