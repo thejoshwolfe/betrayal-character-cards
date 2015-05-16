@@ -627,7 +627,21 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             modifyHealthAndLog(explorer, KNOWL, -1);
           }
         };
-      case "Secret Passage":             return null;
+      case "Secret Passage":
+        return function() {
+          var result = rollDice(3);
+          writeToDoStuffLog("Roll 3d: " + result);
+          if (result >= 6) {
+            writeActionItem("Leads to any room");
+          } else if (result >= 4) {
+            writeActionItem("Leads to an upper floor room");
+          } else if (result >= 2) {
+            writeActionItem("Leads to a ground floor room");
+          } else {
+            writeActionItem("Leads to a basement room");
+          }
+          writeActionItem("You may move there right now, even without movement points left");
+        };
       case "Secret Stairs":
         return null;
       case "Shrieking Wind":             return null;
