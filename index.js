@@ -597,7 +597,17 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             logDiceOfDamage(explorer, "Physical", 2);
           }
         };
-      case "Possession":                 return null;
+      case "Possession":
+        return function() {
+          var trait = chooseHighestTrait(explorer, $scope.traitIndexes);
+          if (traitRollAndLog(explorer, trait) >= 4) {
+            writeActionItem(formatExplorer(explorer) + " gains 1 in any trait");
+          } else {
+            writeToDoStuffLog(formatExplorer(explorer) + " reduces " + traitList[trait] + " to its lowest value");
+            explorer.health[trait] = 1;
+            saveState();
+          }
+        };
       case "Revolving Wall":
         return closeDialog;
       case "Rotten":                     return null;
@@ -631,8 +641,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         };
       case "Spider":
         return function() {
-          // whichever is better, and prefer sanity.
-          var trait = getTraitValue(explorer, SANITY) < getTraitValue(explorer, SPEED) ? SPEED : SANITY;
+          var trait = chooseHighestTrait(explorer, [SANITY, SPEED]);
           var result = traitRollAndLog(explorer, trait);
           if (result >= 4) {
             modifyHealthAndLog(explorer, trait, 1);
@@ -699,6 +708,15 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       total += Math.floor(Math.random() * 3);
     }
     return total;
+  }
+  function chooseHighestTrait(explorer, traits) {
+    var highestTrait = traits[0];
+    traits.forEach(function(t) {
+      if (getTraitValue(explorer, t) > getTraitValue(explorer, highestTrait)) {
+        highestTrait = t;
+      }
+    });
+    return highestTrait;
   }
   function traitRollAndLog(explorer, t) {
     var traitValue = getTraitValue(explorer, t);
