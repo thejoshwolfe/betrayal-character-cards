@@ -209,7 +209,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         summary: getCardInfo(item).summary,
         doItName: doItButtonName,
         doIt: function() {
-          doItFunction();
+          doItFunction(item);
           $scope.doCardDialog.doItName = "OK";
           $scope.doCardDialog.doIt = closeDialog;
           saveState();
@@ -566,7 +566,15 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "The Voice":                  return null;
       case "The Walls":
         return null;
-      case "Webs":                       return null;
+      case "Webs":
+        return function(item) {
+          if (traitRollAndLog(explorer, MIGHT) >= 4) {
+            modifyHealthAndLog(explorer, MIGHT, 1);
+            $scope.discard(explorer, item);
+          } else {
+            writeActionItem(formatExplorer(explorer) + " is caught in webs");
+          }
+        };
       case "What the...?":
         return null;
       case "Whoops!":
