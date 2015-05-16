@@ -370,7 +370,17 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             logDiceOfDamage(explorer, "Mental", 1);
           }
         };
-      case "Bloody Vision":              return null;
+      case "Bloody Vision":
+        return function() {
+          var result = traitRollAndLog(explorer, SANITY);
+          if (result >= 4) {
+            modifyHealthAndLog(explorer, SANITY, 1);
+          } else if (result >= 2) {
+            modifyHealthAndLog(explorer, SANITY, -1);
+          } else {
+            writeActionItem(formatExplorer(explorer) + " attacks something in the same room (with the lowest Might)");
+          }
+        };
       case "Closet Door":                return null;
       case "Creepy Crawlies":
         return function() {
