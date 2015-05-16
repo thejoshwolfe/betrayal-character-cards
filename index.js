@@ -358,7 +358,18 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
             logDiceOfDamage(explorer, "Mental", 1);
           }
         };
-      case "Burning Man":                return null;
+      case "Burning Man":
+        return function() {
+          var result = traitRollAndLog(explorer, SANITY);
+          if (result >= 4) {
+            modifyHealthAndLog(explorer, SANITY, 1);
+          } else if (result >= 2) {
+            writeActionItem(formatExplorer(explorer) + " moves to the Entrance Hall");
+          } else {
+            logDiceOfDamage(explorer, "Physical", 1);
+            logDiceOfDamage(explorer, "Mental", 1);
+          }
+        };
       case "Bloody Vision":              return null;
       case "Closet Door":                return null;
       case "Creepy Crawlies":
@@ -488,7 +499,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       case "Lights Out":
         return closeDialog;
       case "Locked Safe":                return null;
-      case "Mists from the Walls":       return null;
+      case "Mists from the Walls":
+        return null;
       case "Mystic Slide":               return null;
       case "Night View":
         return function() {
@@ -517,7 +529,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         return closeDialog;
       case "Rotten":                     return null;
       case "Secret Passage":             return null;
-      case "Secret Stairs":              return null;
+      case "Secret Stairs":
+        return null;
       case "Shrieking Wind":             return null;
       case "Silence":                    return null;
       case "Skeletons":                  return null;
